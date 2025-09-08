@@ -12,7 +12,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = (
             'email', 'username', 'first_name', 'last_name', 
             'password', 'password_confirm', 'date_of_birth',
-            'weight', 'height', 'gender', 'activity_level'
+            'weight', 'height', 'gender', 'activity_level',
+            'objective', 'dietary_preference', 'additional_restrictions'
         )
     
     def validate(self, attrs):
@@ -44,21 +45,36 @@ class UserLoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError('Email y contraseña son requeridos')
 
+class NutritionGoalsSerializer(serializers.Serializer):
+    calories = serializers.IntegerField(min_value=800, max_value=5000)
+    protein = serializers.IntegerField(min_value=10, max_value=500)
+    carbs = serializers.IntegerField(min_value=10, max_value=800)
+    fat = serializers.IntegerField(min_value=10, max_value=300)
+
+class WaterGoalSerializer(serializers.Serializer):
+    water_ml = serializers.IntegerField(min_value=500, max_value=5000)
+
 class UserProfileSerializer(serializers.ModelSerializer):
     full_name = serializers.ReadOnlyField()
-    bmr = serializers.SerializerMethodField()
+    age = serializers.ReadOnlyField()
+    dietary_info = serializers.SerializerMethodField()
+    has_nutrition_goals = serializers.ReadOnlyField()
+    has_water_goal = serializers.ReadOnlyField()
     
     class Meta:
         model = User
         fields = (
             'id', 'email', 'username', 'first_name', 'last_name', 'full_name',
-            'date_of_birth', 'weight', 'height', 'gender', 'activity_level',
-            'daily_calorie_goal', 'bmr', 'created_at', 'updated_at'
+            'date_of_birth', 'age', 'weight', 'height', 'gender', 'activity_level',
+            'objective', 'dietary_preference', 'additional_restrictions', 'dietary_info',
+            'calories_goal', 'protein_goal', 'carbs_goal', 'fat_goal', 'goals_method', 'has_nutrition_goals',
+            'water_goal', 'water_method', 'has_water_goal',
+            'created_at', 'updated_at'
         )
         read_only_fields = ('id', 'email', 'created_at', 'updated_at')
     
-    def get_bmr(self, obj):
-        return obj.calculate_bmr()
+    def get_dietary_info(self, obj):
+        return obj.get_dietary_info()
 
 class UserUpdateSerializer(serializers.ModelSerializer):
     
@@ -66,5 +82,8 @@ class UserUpdateSerializer(serializers.ModelSerializer):
         model = User
         fields = (
             'first_name', 'last_name', 'date_of_birth',
-            'weight', 'height', 'gender', 'activity_level', 'daily_calorie_goal'
+            'weight', 'height', 'gender', 'activity_level',
+            'objective', 'dietary_preference', 'additional_restrictions',
+            'calories_goal', 'protein_goal', 'carbs_goal', 'fat_goal', 'goals_method',
+            'water_goal', 'water_method'
         )

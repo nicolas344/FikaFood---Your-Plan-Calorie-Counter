@@ -14,4 +14,10 @@ urlpatterns = [
     # Perfil
     path('profile/', views.UserProfileView.as_view(), name='profile'),
     path('dashboard/', views.user_dashboard, name='dashboard'),
+    
+    # Metas
+    path('goals/', views.user_goals, name='goals'),
+    path('goals/manual/', views.set_manual_goals, name='manual-goals'),
+    path('water/', views.user_water, name='water'),
+    path('water/manual/', views.set_manual_water, name='manual-water'),
 ]

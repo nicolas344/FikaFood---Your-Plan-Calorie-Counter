@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Eye, EyeOff, Calendar, Weight, Ruler } from 'lucide-react';
+import { Mail, Lock, User, Eye, EyeOff, Calendar, Weight, Ruler, Target, Utensils } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../common/Input';
 import Select from '../common/Select';
@@ -27,7 +27,10 @@ const RegisterForm = () => {
     weight: '',
     height: '',
     gender: '',
-    activity_level: 'sedentary'
+    activity_level: '',
+    objective: '',
+    dietary_preference: 'classic',
+    additional_restrictions: ''
   });
   
   const [validationErrors, setValidationErrors] = useState({});
@@ -40,11 +43,22 @@ const RegisterForm = () => {
   ];
 
   const activityLevelOptions = [
-    { value: 'sedentary', label: 'Sedentario (poco o ningún ejercicio)' },
-    { value: 'light', label: 'Actividad ligera (ejercicio ligero 1-3 días/semana)' },
-    { value: 'moderate', label: 'Actividad moderada (ejercicio moderado 3-5 días/semana)' },
-    { value: 'active', label: 'Muy activo (ejercicio intenso 6-7 días/semana)' },
-    { value: 'extra', label: 'Extra activo (ejercicio muy intenso, trabajo físico)' }
+    { value: 'sedentary', label: '0-2 días por semana' },
+    { value: 'moderate', label: '3-5 días por semana' },
+    { value: 'active', label: '6+ días por semana' }
+  ];
+
+  const objectiveOptions = [
+    { value: 'lose', label: 'Perder peso' },
+    { value: 'maintain', label: 'Mantener peso' },
+    { value: 'gain', label: 'Aumentar peso' }
+  ];
+
+  const dietaryPreferenceOptions = [
+    { value: 'classic', label: 'Clásico' },
+    { value: 'vegetarian', label: 'Vegetariano' },
+    { value: 'vegan', label: 'Vegano' },
+    { value: 'pescetarian', label: 'Pescetariano' }
   ];
 
   const handleChange = (e) => {
@@ -149,6 +163,9 @@ const RegisterForm = () => {
     if (!submitData.height) delete submitData.height;
     if (!submitData.date_of_birth) delete submitData.date_of_birth;
     if (!submitData.gender) delete submitData.gender;
+    if (!submitData.activity_level) delete submitData.activity_level;
+    if (!submitData.objective) delete submitData.objective;
+    if (!submitData.additional_restrictions) delete submitData.additional_restrictions;
 
     const result = await register(submitData);
     
@@ -384,12 +401,38 @@ const RegisterForm = () => {
               />
 
               <Select
-                label="Nivel de actividad"
+                label="¿Cuántas veces haces ejercicio a la semana?"
                 name="activity_level"
                 value={formData.activity_level}
                 onChange={handleChange}
                 options={activityLevelOptions}
-                required
+                placeholder="Selecciona tu nivel de actividad"
+              />
+
+              <Select
+                label="¿Cuál es tu objetivo?"
+                name="objective"
+                value={formData.objective}
+                onChange={handleChange}
+                options={objectiveOptions}
+                placeholder="Selecciona tu objetivo"
+              />
+
+              <Select
+                label="Preferencia dietética"
+                name="dietary_preference"
+                value={formData.dietary_preference}
+                onChange={handleChange}
+                options={dietaryPreferenceOptions}
+              />
+
+              <Input
+                label="Restricciones adicionales (opcional)"
+                type="text"
+                name="additional_restrictions"
+                value={formData.additional_restrictions}
+                onChange={handleChange}
+                placeholder="Ej: Alérgico a nueces, intolerante a lactosa..."
               />
 
               <div className="flex space-x-4">
