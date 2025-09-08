@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { LogOut, User, Settings, TrendingUp, Target, Activity } from 'lucide-react';
+import { LogOut, User, Settings, TrendingUp, Target, Activity, Camera } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
+import { Link } from 'react-router-dom';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -56,6 +57,15 @@ const DashboardPage = () => {
               <p className="text-sm text-gray-600">Tu plan de calorías personalizado</p>
             </div>
             <div className="flex items-center space-x-4">
+              {/* Botón de Registros */}
+              <Link
+                to="/registers"
+                className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm font-medium flex items-center transition-colors"
+              >
+                <Camera className="w-4 h-4 mr-2" />
+                Registrar Comida
+              </Link>
+              
               <div className="text-right">
                 <p className="text-sm font-medium text-gray-900">{user?.full_name}</p>
                 <p className="text-sm text-gray-500">{user?.email}</p>
@@ -231,22 +241,21 @@ const DashboardPage = () => {
         </div>
 
         {/* Próximas funcionalidades */}
-        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-blue-900 mb-2">
-            🚀 Próximamente
+        <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-6">
+          <h3 className="text-lg font-medium text-green-900 mb-2 flex items-center">
+            <Camera className="w-5 h-5 mr-2" />
+            ¡Nueva Funcionalidad Disponible!
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-700">
-            <ul className="space-y-1">
-              <li>• Registro de comidas diarias</li>
-              <li>• Base de datos de alimentos</li>
-              <li>• Seguimiento de calorías</li>
-            </ul>
-            <ul className="space-y-1">
-              <li>• Planes de alimentación personalizados</li>
-              <li>• Gráficos de progreso</li>
-              <li>• Recomendaciones nutricionales</li>
-            </ul>
+          <div className="text-sm text-green-700 mb-4">
+            <p>Ya puedes registrar tus comidas y obtener análisis nutricional automático con IA.</p>
           </div>
+          <Link
+            to="/registers"
+            className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+          >
+            <Camera className="w-4 h-4 mr-2" />
+            Registrar mi primera comida
+          </Link>
         </div>
       </main>
     </div>

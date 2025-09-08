@@ -112,6 +112,16 @@ class User(AbstractUser):
             self.fat_goal
         ])
     
+    @property
+    def has_nutrition_goals(self):
+        """Alias para has_goals para consistencia con el frontend"""
+        return self.has_goals
+    
+    @property
+    def has_water_goal(self):
+        """Verifica si el usuario tiene una meta de agua establecida"""
+        return self.water_goal is not None and self.water_goal > 0
+    
     def get_dietary_info(self):
         """Retorna información dietética completa"""
         return {
