@@ -28,10 +28,20 @@ class FoodRegisterSerializer(serializers.ModelSerializer):
     food_items = FoodItemSerializer(many=True, read_only=True)
     nutrition_summary = serializers.ReadOnlyField(source='get_nutrition_summary')
     macros_distribution = serializers.ReadOnlyField()
+    # Agregar esto para asegurar URL completa de imagen
+    image_url = serializers.SerializerMethodField()
     
     class Meta:
         model = FoodRegister
         fields = '__all__'
+    
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image and request:
+            return request.build_absolute_uri(obj.image.url)
+        elif obj.image:
+            return obj.image.url
+        return None
 
 class FoodRegisterUpdateSerializer(serializers.ModelSerializer):
     class Meta:

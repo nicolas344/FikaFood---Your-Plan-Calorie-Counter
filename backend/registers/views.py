@@ -78,7 +78,7 @@ class FoodRegisterCreateView(generics.CreateAPIView):
             
             return Response({
                 'message': 'Imagen analizada exitosamente',
-                'register': FoodRegisterSerializer(food_register).data
+                'register': FoodRegisterSerializer(food_register, context={'request': request}).data
             }, status=status.HTTP_201_CREATED)
             
         except Exception as e:
@@ -263,7 +263,7 @@ def reanalyze_register(request, register_id):
         
         return Response({
             'message': 'Re-análisis exitoso',
-            'register': FoodRegisterSerializer(food_register).data
+            'register': FoodRegisterSerializer(food_register, context={'request': request}).data
         })
         
     except Exception as e:
