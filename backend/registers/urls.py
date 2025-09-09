@@ -9,5 +9,6 @@ urlpatterns = [
     path('<int:pk>/', views.FoodRegisterDetailView.as_view(), name='detail'),
     
     path('daily-summary/', views.daily_summary, name='daily-summary'),
+    path('period-summary/', views.period_summary, name='period-summary'),
     path('<int:register_id>/reanalyze/', views.reanalyze_register, name='reanalyze'),
 ]
