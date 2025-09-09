@@ -57,10 +57,15 @@ const LoginForm = () => {
     
     if (!validateForm()) return;
 
-    const result = await login(formData);
+    const result = await login(formData.email, formData.password);
     
     if (result.success) {
-      navigate('/dashboard');
+      // Redirigir según el tipo de usuario
+      if (result.shouldRedirectToAdmin) {
+        navigate('/admin-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
