@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RegistersPage from './pages/RegistersPage';
 import DashboardPage from './pages/DashboardPage';
+import ProfileSetupPage from './pages/ProfileSetupPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css'
@@ -42,6 +43,8 @@ function App() {
                 <RegistersPage />
               </ProtectedRoute>
             } />
+
+            <Route path="/profile-setup" element={<ProfileSetupPage />} />
             
             {/* Ruta 404 */}
             <Route path="*" element={

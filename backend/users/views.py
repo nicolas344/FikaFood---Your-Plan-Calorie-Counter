@@ -88,12 +88,23 @@ class UserLogoutView(APIView):
     
     def post(self, request):
         try:
-            refresh_token = request.data.get("refresh_token")
+            refresh_token = request.data.get("refresh")
+            
+            if not refresh_token:
+                return Response(
+                    {'error': 'Refresh token es requerido'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({'message': 'Logout exitoso'})
+            
         except Exception:
-            return Response({'error': 'Token inválido'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'error': 'Token inválido'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 @api_view(['POST'])
 @permission_classes([permissions.IsAuthenticated])
