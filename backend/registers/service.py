@@ -93,6 +93,7 @@ class GeminiAnalyzer:
     def _process_response(self, response_text):
         """Procesa la respuesta de Gemini"""
         try:
+
             # Limpiar respuesta
             cleaned = response_text.strip()
             if cleaned.startswith('```json'):

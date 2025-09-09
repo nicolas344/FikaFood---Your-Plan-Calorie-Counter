@@ -43,7 +43,7 @@ class FoodRegisterCreateView(generics.CreateAPIView):
                 food_register.image, 
                 food_register.description
             )
-            
+            print(gemini_data)
             # Actualizar registro con datos de Gemini
             food_register.ai_description = gemini_data['ai_description']
             food_register.ai_confidence = gemini_data['ai_confidence']
