@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { TrendingUp, Target, Activity, Award, Calendar } from 'lucide-react';
 import registerService from '../../services/registerService';
 
-const DailySummary = ({ refreshTrigger, dateFilter }) => {
+const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,21 +15,24 @@ const DailySummary = ({ refreshTrigger, dateFilter }) => {
     try {
       let result;
       
-      if (dateFilter.period === 'today' || dateFilter.period === 'yesterday') {
+      // Asegurar que dateFilter existe y tiene period
+      const currentFilter = dateFilter || { period: 'today' };
+      
+      if (currentFilter.period === 'today' || currentFilter.period === 'yesterday') {
         // Para día específico, usar daily-summary
-        const periodDates = registerService.getPeriodDates(dateFilter.period);
+        const periodDates = registerService.getPeriodDates(currentFilter.period);
         const targetDate = periodDates.date;
         result = await registerService.getDailySummary(targetDate);
       } else {
         // Para períodos más largos, usar period-summary
         const filters = {};
         
-        if (dateFilter.period === 'custom') {
+        if (currentFilter.period === 'custom') {
           filters.period = 'custom';
-          filters.start_date = dateFilter.start_date;
-          filters.end_date = dateFilter.end_date;
+          filters.start_date = currentFilter.start_date;
+          filters.end_date = currentFilter.end_date;
         } else {
-          filters.period = dateFilter.period.replace('this_', '').replace('last_', '');
+          filters.period = currentFilter.period.replace('this_', '').replace('last_', '');
         }
         
         result = await registerService.getPeriodSummary(filters);
@@ -46,8 +49,10 @@ const DailySummary = ({ refreshTrigger, dateFilter }) => {
   };
 
   const getFilterLabel = () => {
-    if (dateFilter.period === 'custom') {
-      return `${dateFilter.start_date} - ${dateFilter.end_date}`;
+    const currentFilter = dateFilter || { period: 'today' };
+    
+    if (currentFilter.period === 'custom') {
+      return `${currentFilter.start_date} - ${currentFilter.end_date}`;
     }
     
     const labels = {
@@ -59,11 +64,12 @@ const DailySummary = ({ refreshTrigger, dateFilter }) => {
       'last_month': 'Mes pasado'
     };
     
-    return labels[dateFilter.period] || 'Período seleccionado';
+    return labels[currentFilter.period] || 'Período seleccionado';
   };
 
   const isPeriodSummary = () => {
-    return !['today', 'yesterday'].includes(dateFilter.period);
+    const currentFilter = dateFilter || { period: 'today' };
+    return !['today', 'yesterday'].includes(currentFilter.period);
   };
 
   if (isLoading) {
@@ -101,7 +107,7 @@ const DailySummary = ({ refreshTrigger, dateFilter }) => {
           <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-500">No hay registros para {getFilterLabel().toLowerCase()}</p>
           <p className="text-sm text-gray-400">
-            {dateFilter.period === 'today' 
+            {(dateFilter?.period || 'today') === 'today' 
               ? '¡Registra tu primera comida!' 
               : 'Prueba con otro período'
             }

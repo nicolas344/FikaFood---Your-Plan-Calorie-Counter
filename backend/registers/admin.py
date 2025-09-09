@@ -1,3 +1,5 @@
 from django.contrib import admin
-
-# Register your models here.
+from .models import FoodRegister, FoodItem
+# Admin básico sin personalización
+admin.site.register(FoodRegister)
+admin.site.register(FoodItem)

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Clock, Camera, Zap, Activity, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import registerService from '../../services/registerService';
 
-const RegistersList = ({ refreshTrigger, dateFilter }) => {
+const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
   const [registers, setRegisters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedFoodItems, setExpandedFoodItems] = useState(new Set());
@@ -77,8 +77,9 @@ const RegistersList = ({ refreshTrigger, dateFilter }) => {
   };
 
   const getFilterLabel = () => {
-    if (dateFilter.period === 'custom') {
-      return `${dateFilter.start_date} - ${dateFilter.end_date}`;
+    const currentFilter = dateFilter || { period: 'today' };
+    if (currentFilter.period === 'custom') {
+      return `${currentFilter.start_date} - ${currentFilter.end_date}`;
     }
     
     const labels = {
@@ -90,7 +91,7 @@ const RegistersList = ({ refreshTrigger, dateFilter }) => {
       'last_month': 'el mes pasado'
     };
     
-    return labels[dateFilter.period] || 'el período seleccionado';
+    return labels[currentFilter.period] || 'el período seleccionado';
   };
 
   if (isLoading) {
