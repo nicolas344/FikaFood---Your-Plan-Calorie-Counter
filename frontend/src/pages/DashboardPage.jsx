@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, User, Settings, TrendingUp, Target, Activity, Camera } from 'lucide-react';
+import { LogOut, User, Settings, TrendingUp, Target, Activity, Camera,Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
 import Button from '../components/common/Button';
@@ -308,6 +308,18 @@ const DashboardPage = () => {
               <div className="text-left">
                 <h3 className="font-semibold text-gray-900">Ver Registros</h3>
                 <p className="text-sm text-gray-600">Historial de comidas</p>
+              </div>
+            </div>
+          </button>
+            <button
+            onClick={() => navigate('/MealPlan')}
+            className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-red-500"
+          >
+            <div className="flex items-center">
+              <Crown className="w-6 h-6 text-red-500 mr-3" />
+              <div className="text-left">
+                <h3 className="font-semibold text-gray-900">Planes Alimenticios</h3>
+                <p className="text-sm text-gray-600">Genera y gestiona tus planes alimenticios</p>
               </div>
             </div>
           </button>

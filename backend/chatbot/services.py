@@ -148,7 +148,7 @@ Usuario: {user_message}"""
             
             config = types.GenerateContentConfig(
                 temperature=0.7,
-                max_output_tokens=500,
+                max_output_tokens=2000,
             )
             
             response_text = ""

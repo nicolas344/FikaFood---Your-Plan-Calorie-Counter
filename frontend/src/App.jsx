@@ -9,6 +9,7 @@ import ProfileSetupPage from './pages/ProfileSetupPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css'
+import MealPlanPage from "./pages/MealPlanPage.jsx";
 
 function App() {
   return (
@@ -57,7 +58,12 @@ function App() {
                 <ProfileSetupPage />
               </ProtectedRoute>
             } />
-            
+            {/* Ruta de los Planes Alimenticios - protegida */}
+            <Route path="/mealplan" element={
+              <ProtectedRoute>
+                <MealPlanPage />
+              </ProtectedRoute>
+            } />
             {/* Ruta 404 */}
             <Route path="*" element={
               <div className="min-h-screen bg-gray-50 flex items-center justify-center">

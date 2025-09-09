@@ -48,8 +48,8 @@ INSTALLED_APPS = [
     'users',
     'chatbot',
     'registers', 
-    # 'progress',
-    # 'planes',
+    #'progress',
+    'MealPlan',
 ]
 
 MIDDLEWARE = [
