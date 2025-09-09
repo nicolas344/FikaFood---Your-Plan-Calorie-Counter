@@ -4,6 +4,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RegistersPage from './pages/RegistersPage';
 import DashboardPage from './pages/DashboardPage';
+import ChatbotPage from './pages/ChatbotPage'; // Agregar esta importación
 import ProfileSetupPage from './pages/ProfileSetupPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
@@ -44,7 +45,18 @@ function App() {
               </ProtectedRoute>
             } />
 
-            <Route path="/profile-setup" element={<ProfileSetupPage />} />
+            {/* Ruta del chatbot - protegida */}
+            <Route path="/chatbot" element={
+              <ProtectedRoute>
+                <ChatbotPage />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/profile-setup" element={
+              <ProtectedRoute>
+                <ProfileSetupPage />
+              </ProtectedRoute>
+            } />
             
             {/* Ruta 404 */}
             <Route path="*" element={
@@ -65,4 +77,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

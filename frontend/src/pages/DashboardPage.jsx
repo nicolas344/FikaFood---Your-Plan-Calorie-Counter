@@ -4,13 +4,15 @@ import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { MessageCircle } from 'lucide-react';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -256,6 +258,59 @@ const DashboardPage = () => {
             <Camera className="w-4 h-4 mr-2" />
             Registrar mi primera comida
           </Link>
+        </div>
+
+        {/* Botón del Chatbot */}
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={() => navigate('/chatbot')}
+            className="flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Asistente Nutricional
+          </button>
+        </div>
+
+        {/* Quick Actions - Agregar el chatbot aquí también */}
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button
+            onClick={() => navigate('/register')}
+            className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-green-500"
+          >
+            <div className="flex items-center">
+              <Camera className="w-6 h-6 text-green-500 mr-3" />
+              <div className="text-left">
+                <h3 className="font-semibold text-gray-900">Registrar Comida</h3>
+                <p className="text-sm text-gray-600">Analiza tu comida con IA</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate('/chatbot')}
+            className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-blue-500"
+          >
+            <div className="flex items-center">
+              <MessageCircle className="w-6 h-6 text-blue-500 mr-3" />
+              <div className="text-left">
+                <h3 className="font-semibold text-gray-900">Asistente IA</h3>
+                <p className="text-sm text-gray-600">Pregunta al experto nutricional</p>
+              </div>
+            </div>
+          </button>
+
+          <button
+            onClick={() => navigate('/registers')}
+            className="p-4 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow border-l-4 border-purple-500"
+          >
+            <div className="flex items-center">
+              <TrendingUp className="w-6 h-6 text-purple-500 mr-3" />
+              <div className="text-left">
+                <h3 className="font-semibold text-gray-900">Ver Registros</h3>
+                <p className="text-sm text-gray-600">Historial de comidas</p>
+              </div>
+            </div>
+          </button>
         </div>
       </main>
     </div>
