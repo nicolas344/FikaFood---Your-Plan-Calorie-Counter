@@ -25,8 +25,15 @@ const ProfileSetupForm = () => {
     objective: '',
     dietary_preference: 'classic',
     additional_restrictions: '',
-    calorie_goal: '',
-    water_goal: ''
+    // Metas nutricionales
+    calories_goal: '',
+    protein_goal: '',
+    carbs_goal: '',
+    fat_goal: '',
+    goals_method: 'manual',
+    // Meta de agua
+    water_goal: '',
+    water_method: 'manual'
   });
   
   const [validationErrors, setValidationErrors] = useState({});
@@ -99,14 +106,36 @@ const ProfileSetupForm = () => {
         break;
       
       case 5: // Calorie Goal
-        if (!formData.calorie_goal) {
-          errors.calorie_goal = 'Meta calórica es requerida';
+        if (formData.goals_method === 'manual') {
+          if (!formData.calories_goal) {
+            errors.calories_goal = 'Meta calórica es requerida';
+          }
+          if (!formData.protein_goal) {
+            errors.protein_goal = 'Meta de proteína es requerida';
+          }
+          if (!formData.carbs_goal) {
+            errors.carbs_goal = 'Meta de carbohidratos es requerida';
+          }
+          if (!formData.fat_goal) {
+            errors.fat_goal = 'Meta de grasa es requerida';
+          }
+        } else if (formData.goals_method === 'ai') {
+          // Para IA, verificar que se hayan generado los valores
+          if (!formData.calories_goal || !formData.protein_goal || !formData.carbs_goal || !formData.fat_goal) {
+            errors.calories_goal = 'Debes generar las metas con IA primero';
+          }
         }
         break;
         
       case 6: // Water Goal
-        if (!formData.water_goal) {
-          errors.water_goal = 'Meta de agua es requerida';
+        if (formData.water_method === 'manual') {
+          if (!formData.water_goal) {
+            errors.water_goal = 'Meta de agua es requerida';
+          }
+        } else if (formData.water_method === 'ai') {
+          if (!formData.water_goal) {
+            errors.water_goal = 'Debes generar la meta de agua con IA primero';
+          }
         }
         break;
     }
@@ -160,11 +189,16 @@ const ProfileSetupForm = () => {
         };
       case 5:
         return {
-          calorie_goal: parseInt(formData.calorie_goal)
+          calories_goal: parseInt(formData.calories_goal),
+          protein_goal: parseInt(formData.protein_goal),
+          carbs_goal: parseInt(formData.carbs_goal),
+          fat_goal: parseInt(formData.fat_goal),
+          goals_method: formData.goals_method
         };
       case 6:
         return {
-          water_goal: parseFloat(formData.water_goal)
+          water_goal: Math.round(parseFloat(formData.water_goal) * 1000), // Convertir a ml para el backend
+          water_method: formData.water_method
         };
       default:
         return {};
@@ -229,8 +263,8 @@ const ProfileSetupForm = () => {
       2: 'Información física',
       3: 'Estilo de vida',
       4: 'Preferencias dietéticas',
-      5: 'Meta calórica',
-      6: 'Meta de agua',
+      5: 'Metas nutricionales',
+      6: 'Meta de hidratación',
     };
     return titles[currentStep];
   };
