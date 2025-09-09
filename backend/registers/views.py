@@ -3,6 +3,8 @@ from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.db.models import Sum, Count
+from datetime import datetime, date, timedelta
+from django.utils.dateparse import parse_date
 from .models import FoodRegister, FoodItem
 from .serializers import (
     FoodRegisterCreateSerializer,
@@ -10,6 +12,7 @@ from .serializers import (
     FoodRegisterUpdateSerializer
 )
 from .service import GeminiAnalyzer
+
 
 class FoodRegisterCreateView(generics.CreateAPIView):
     """Crear registro con análisis de Gemini"""
@@ -94,12 +97,79 @@ class FoodRegisterCreateView(generics.CreateAPIView):
             }, status=status.HTTP_400_BAD_REQUEST)
 
 class FoodRegisterListView(generics.ListAPIView):
-    """Listar registros del usuario"""
+    """Listar registros del usuario con filtros de fecha"""
     serializer_class = FoodRegisterSerializer
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return FoodRegister.objects.filter(user=self.request.user)
+        queryset = FoodRegister.objects.filter(user=self.request.user).order_by('-created_at')
+        
+        # Filtro por fecha específica
+        date_filter = self.request.query_params.get('date', None)
+        if date_filter:
+            try:
+                filter_date = parse_date(date_filter)
+                queryset = queryset.filter(created_at__date=filter_date)
+            except ValueError:
+                pass
+        
+        # Filtro por rango de fechas
+        start_date = self.request.query_params.get('start_date', None)
+        end_date = self.request.query_params.get('end_date', None)
+        
+        if start_date:
+            try:
+                start = parse_date(start_date)
+                queryset = queryset.filter(created_at__date__gte=start)
+            except ValueError:
+                pass
+                
+        if end_date:
+            try:
+                end = parse_date(end_date)
+                queryset = queryset.filter(created_at__date__lte=end)
+            except ValueError:
+                pass
+        
+        # Filtro por período predefinido
+        period = self.request.query_params.get('period', None)
+        if period:
+            today = date.today()
+            
+            if period == 'today':
+                queryset = queryset.filter(created_at__date=today)
+            elif period == 'yesterday':
+                yesterday = today - timedelta(days=1)
+                queryset = queryset.filter(created_at__date=yesterday)
+            elif period == 'this_week':
+                start_week = today - timedelta(days=today.weekday())
+                queryset = queryset.filter(created_at__date__gte=start_week)
+            elif period == 'last_week':
+                start_last_week = today - timedelta(days=today.weekday() + 7)
+                end_last_week = today - timedelta(days=today.weekday() + 1)
+                queryset = queryset.filter(
+                    created_at__date__gte=start_last_week,
+                    created_at__date__lte=end_last_week
+                )
+            elif period == 'this_month':
+                start_month = today.replace(day=1)
+                queryset = queryset.filter(created_at__date__gte=start_month)
+            elif period == 'last_month':
+                # Primer día del mes pasado
+                if today.month == 1:
+                    start_last_month = today.replace(year=today.year-1, month=12, day=1)
+                else:
+                    start_last_month = today.replace(month=today.month-1, day=1)
+                
+                # Último día del mes pasado
+                end_last_month = today.replace(day=1) - timedelta(days=1)
+                
+                queryset = queryset.filter(
+                    created_at__date__gte=start_last_month,
+                    created_at__date__lte=end_last_month
+                )
+        
+        return queryset
 
 class FoodRegisterDetailView(generics.RetrieveUpdateDestroyAPIView):
     """Ver, actualizar o eliminar registro"""
@@ -107,40 +177,98 @@ class FoodRegisterDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
-        return FoodRegister.objects.filter(user=self.request.user)
-    
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = FoodRegisterUpdateSerializer(instance, data=request.data, partial=True)
+        queryset = FoodRegister.objects.filter(user=self.request.user).order_by('-created_at')
+        #filtro por fecha especifica
+        date_filter= self.request.query_params.get('date', None)
+        if date_filter:
+            try:
+                filter_date = parse_date(date_filter)
+                queryset = queryset.filter(created_at__date=filter_date)
+            except ValueError:
+                pass
+        start_date = self.request.query_params.get('start_date', None)
+        end_date = self.request.query_params.get('end_date', None)
+
+        #filtro por fecha de inicio y fin
+        if start_date:
+            try:
+                start = parse_date(start_date)
+                queryset = queryset.filter(created_at__date__gte=start)
+            except ValueError:
+                pass
+        if end_date:
+            try:
+                end = parse_date(end_date)
+                queryset = queryset.filter(created_at__date__lte=end)
+            except ValueError:
+                pass
+
+        #filtro por periodo definido
+        period = self.request.query_params.get('period', None)
+
+        if period:
+            today = date.today()
+            if period == 'today':
+                queryset = queryset.filter(created_at__date=today)
+            elif period == 'yesterday':
+                yesterday = today - timedelta(days=1)
+                queryset = queryset.filter(created_at__date=yesterday)
+            elif period == 'this_week':
+                start_week = today - timedelta(days=today.weekday())
+                queryset = queryset.filter(created_at__date__gte=start_week)
+            elif period == 'last_week':
+                start_last_week = today - timedelta(days=today.weekday() + 7)
+                end_last_week = today - timedelta(days=today.weekday() + 1)
+                queryset = queryset.filter(
+                    created_at__date__gte=start_last_week,
+                    created_at__date__lte=end_last_week
+                )
+            elif period == 'this_month':
+                start_month = today.replace(day=1)
+                queryset = queryset.filter(created_at__date__gte=start_month)
+            elif period == 'last_month':
+                # Primer día del mes pasado
+                if today.month == 1:
+                    start_last_month = today.replace(year=today.year-1, month=12, day=1)
+                else:
+                    start_last_month = today.replace(month=today.month-1, day=1)
+                
+                # Último día del mes pasado
+                end_last_month = today.replace(day=1) - timedelta(days=1)
+                
+                queryset = queryset.filter(
+                    created_at__date__gte=start_last_month,
+                    created_at__date__lte=end_last_month
+                )
         
-        if serializer.is_valid():
-            serializer.save()
-            return Response({
-                'message': 'Registro actualizado',
-                'register': FoodRegisterSerializer(instance).data
-            })
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return queryset
 
 @api_view(['GET'])
 @permission_classes([permissions.IsAuthenticated])
 def daily_summary(request):
-    """Resumen nutricional del día"""
-    from datetime import date
+    """Resumen nutricional del día o período específico"""
+    # Obtener parámetros de fecha
+    date_param = request.GET.get('date', None)
     
-    today = date.today()
+    if date_param:
+        try:
+            target_date = parse_date(date_param)
+        except ValueError:
+            target_date = date.today()
+    else:
+        target_date = date.today()
     
-    # Obtener registros del día
+    # Obtener registros del día específico
     registers = FoodRegister.objects.filter(
         user=request.user,
-        created_at__date=today,
+        created_at__date=target_date,
         status='completed'
     )
     
     if not registers.exists():
         return Response({
-            'date': today,
-            'message': 'No hay registros hoy',
+            'date': target_date,
+            'message': f'No hay registros para el {target_date}',
             'totals': {
                 'calories': 0, 'protein': 0, 'carbs': 0, 'fat': 0,
                 'fiber': 0, 'sugar': 0, 'sodium': 0
@@ -188,7 +316,7 @@ def daily_summary(request):
         }
     
     return Response({
-        'date': today,
+        'date': target_date,
         'totals': {
             'calories': round(totals['calories'] or 0, 1),
             'protein': round(totals['protein'] or 0, 1),
@@ -200,6 +328,124 @@ def daily_summary(request):
         },
         'count': totals['count'],
         'goals_progress': goals_progress
+    })
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def period_summary(request):
+    """Resumen nutricional por período (semanal, mensual, etc.)"""
+    start_date_param = request.GET.get('start_date')
+    end_date_param = request.GET.get('end_date')
+    period = request.GET.get('period', 'week')  # week, month, custom
+    
+    today = date.today()
+    
+    # Determinar fechas según el período
+    if period == 'week':
+        start_date = today - timedelta(days=today.weekday())
+        end_date = start_date + timedelta(days=6)
+    elif period == 'month':
+        start_date = today.replace(day=1)
+        # Último día del mes
+        if today.month == 12:
+            end_date = today.replace(year=today.year+1, month=1, day=1) - timedelta(days=1)
+        else:
+            end_date = today.replace(month=today.month+1, day=1) - timedelta(days=1)
+    elif period == 'custom':
+        if start_date_param and end_date_param:
+            try:
+                start_date = parse_date(start_date_param)
+                end_date = parse_date(end_date_param)
+            except ValueError:
+                return Response({'error': 'Formato de fecha inválido'}, 
+                              status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Se requieren start_date y end_date para período custom'}, 
+                          status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'error': 'Período inválido'}, 
+                       status=status.HTTP_400_BAD_REQUEST)
+    
+    # Obtener registros del período
+    registers = FoodRegister.objects.filter(
+        user=request.user,
+        created_at__date__gte=start_date,
+        created_at__date__lte=end_date,
+        status='completed'
+    )
+    
+    # Agrupar por día
+    daily_data = {}
+    for register in registers:
+        day = register.created_at.date()
+        if day not in daily_data:
+            daily_data[day] = {
+                'calories': 0, 'protein': 0, 'carbs': 0, 'fat': 0,
+                'fiber': 0, 'sugar': 0, 'sodium': 0, 'count': 0
+            }
+        
+        daily_data[day]['calories'] += register.total_calories or 0
+        daily_data[day]['protein'] += register.total_protein or 0
+        daily_data[day]['carbs'] += register.total_carbs or 0
+        daily_data[day]['fat'] += register.total_fat or 0
+        daily_data[day]['fiber'] += register.total_fiber or 0
+        daily_data[day]['sugar'] += register.total_sugar or 0
+        daily_data[day]['sodium'] += register.total_sodium or 0
+        daily_data[day]['count'] += 1
+    
+    # Calcular totales del período
+    period_totals = registers.aggregate(
+        calories=Sum('total_calories'),
+        protein=Sum('total_protein'),
+        carbs=Sum('total_carbs'),
+        fat=Sum('total_fat'),
+        fiber=Sum('total_fiber'),
+        sugar=Sum('total_sugar'),
+        sodium=Sum('total_sodium'),
+        count=Count('id')
+    )
+    
+    # Formatear datos diarios
+    daily_summary = []
+    current_date = start_date
+    while current_date <= end_date:
+        day_data = daily_data.get(current_date, {
+            'calories': 0, 'protein': 0, 'carbs': 0, 'fat': 0,
+            'fiber': 0, 'sugar': 0, 'sodium': 0, 'count': 0
+        })
+        
+        daily_summary.append({
+            'date': current_date,
+            'totals': {
+                'calories': round(day_data['calories'], 1),
+                'protein': round(day_data['protein'], 1),
+                'carbs': round(day_data['carbs'], 1),
+                'fat': round(day_data['fat'], 1),
+                'fiber': round(day_data['fiber'], 1),
+                'sugar': round(day_data['sugar'], 1),
+                'sodium': round(day_data['sodium'], 1),
+            },
+            'count': day_data['count']
+        })
+        current_date += timedelta(days=1)
+    
+    return Response({
+        'period': period,
+        'start_date': start_date,
+        'end_date': end_date,
+        'daily_summary': daily_summary,
+        'period_totals': {
+            'calories': round(period_totals['calories'] or 0, 1),
+            'protein': round(period_totals['protein'] or 0, 1),
+            'carbs': round(period_totals['carbs'] or 0, 1),
+            'fat': round(period_totals['fat'] or 0, 1),
+            'fiber': round(period_totals['fiber'] or 0, 1),
+            'sugar': round(period_totals['sugar'] or 0, 1),
+            'sodium': round(period_totals['sodium'] or 0, 1),
+        },
+        'total_count': period_totals['count'],
+        'days_in_period': (end_date - start_date).days + 1,
+        'days_with_records': len([d for d in daily_data.values() if d['count'] > 0])
     })
 
 @api_view(['POST'])

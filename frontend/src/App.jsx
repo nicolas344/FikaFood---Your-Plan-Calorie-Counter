@@ -6,6 +6,7 @@ import RegistersPage from './pages/RegistersPage';
 import DashboardPage from './pages/DashboardPage';
 import ChatbotPage from './pages/ChatbotPage'; // Agregar esta importación
 import ProfileSetupPage from './pages/ProfileSetupPage';
+import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css'
@@ -58,6 +59,13 @@ function App() {
                 <ProfileSetupPage />
               </ProtectedRoute>
             } />
+
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <ProfilePage />
+              </ProtectedRoute>
+            } />
+            
             {/* Ruta de los Planes Alimenticios - protegida */}
             <Route path="/mealplan" element={
               <ProtectedRoute>

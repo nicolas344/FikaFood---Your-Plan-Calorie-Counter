@@ -1,19 +1,43 @@
 import { useEffect, useState } from 'react';
-import { TrendingUp, Target, Activity, Award } from 'lucide-react';
+import { TrendingUp, Target, Activity, Award, Calendar } from 'lucide-react';
 import registerService from '../../services/registerService';
 
-const DailySummary = ({ refreshTrigger }) => {
+const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     loadSummary();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, dateFilter]);
 
   const loadSummary = async () => {
     setIsLoading(true);
     try {
-      const result = await registerService.getDailySummary();
+      let result;
+      
+      // Asegurar que dateFilter existe y tiene period
+      const currentFilter = dateFilter || { period: 'today' };
+      
+      if (currentFilter.period === 'today' || currentFilter.period === 'yesterday') {
+        // Para día específico, usar daily-summary
+        const periodDates = registerService.getPeriodDates(currentFilter.period);
+        const targetDate = periodDates.date;
+        result = await registerService.getDailySummary(targetDate);
+      } else {
+        // Para períodos más largos, usar period-summary
+        const filters = {};
+        
+        if (currentFilter.period === 'custom') {
+          filters.period = 'custom';
+          filters.start_date = currentFilter.start_date;
+          filters.end_date = currentFilter.end_date;
+        } else {
+          filters.period = currentFilter.period.replace('this_', '').replace('last_', '');
+        }
+        
+        result = await registerService.getPeriodSummary(filters);
+      }
+      
       if (result.success) {
         setSummary(result.data);
       }
@@ -22,6 +46,30 @@ const DailySummary = ({ refreshTrigger }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const getFilterLabel = () => {
+    const currentFilter = dateFilter || { period: 'today' };
+    
+    if (currentFilter.period === 'custom') {
+      return `${currentFilter.start_date} - ${currentFilter.end_date}`;
+    }
+    
+    const labels = {
+      'today': 'Hoy',
+      'yesterday': 'Ayer',
+      'this_week': 'Esta semana',
+      'last_week': 'Semana pasada',
+      'this_month': 'Este mes',
+      'last_month': 'Mes pasado'
+    };
+    
+    return labels[currentFilter.period] || 'Período seleccionado';
+  };
+
+  const isPeriodSummary = () => {
+    const currentFilter = dateFilter || { period: 'today' };
+    return !['today', 'yesterday'].includes(currentFilter.period);
   };
 
   if (isLoading) {
@@ -38,21 +86,32 @@ const DailySummary = ({ refreshTrigger }) => {
     );
   }
 
-  const totals = summary?.totals || {};
+  const totals = isPeriodSummary() 
+    ? summary?.period_totals || {} 
+    : summary?.totals || {};
+  
   const goalsProgress = summary?.goals_progress || null;
+  const count = isPeriodSummary() 
+    ? summary?.total_count || 0 
+    : summary?.count || 0;
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
         <TrendingUp className="w-5 h-5 mr-2" />
-        Resumen de Hoy
+        Resumen - {getFilterLabel()}
       </h2>
 
-      {summary?.count === 0 ? (
+      {count === 0 ? (
         <div className="text-center py-8">
           <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No hay registros hoy</p>
-          <p className="text-sm text-gray-400">¡Registra tu primera comida!</p>
+          <p className="text-gray-500">No hay registros para {getFilterLabel().toLowerCase()}</p>
+          <p className="text-sm text-gray-400">
+            {(dateFilter?.period || 'today') === 'today' 
+              ? '¡Registra tu primera comida!' 
+              : 'Prueba con otro período'
+            }
+          </p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -87,8 +146,41 @@ const DailySummary = ({ refreshTrigger }) => {
             </div>
           </div>
 
-          {/* Progreso hacia objetivos */}
-          {goalsProgress && (
+          {/* Información adicional para períodos largos */}
+          {isPeriodSummary() && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-gray-600">
+                  {summary?.days_in_period || 0}
+                </div>
+                <div className="text-sm text-gray-800">Días en período</div>
+              </div>
+              
+              <div className="bg-indigo-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-indigo-600">
+                  {summary?.days_with_records || 0}
+                </div>
+                <div className="text-sm text-indigo-800">Días con registros</div>
+              </div>
+              
+              <div className="bg-teal-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-teal-600">
+                  {Math.round((totals.calories || 0) / (summary?.days_with_records || 1))}
+                </div>
+                <div className="text-sm text-teal-800">Cal/día promedio</div>
+              </div>
+              
+              <div className="bg-orange-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-orange-600">
+                  {Math.round(((summary?.days_with_records || 0) / (summary?.days_in_period || 1)) * 100)}%
+                </div>
+                <div className="text-sm text-orange-800">Consistencia</div>
+              </div>
+            </div>
+          )}
+
+          {/* Progreso hacia objetivos (solo para hoy y ayer) */}
+          {goalsProgress && !isPeriodSummary() && (
             <div className="space-y-3">
               <h3 className="font-medium text-gray-900 flex items-center">
                 <Target className="w-4 h-4 mr-2" />
@@ -117,12 +209,17 @@ const DailySummary = ({ refreshTrigger }) => {
             </div>
           )}
 
-          {/* Información adicional */}
+          {/* Información de registros */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center justify-between text-sm text-gray-600">
-              <span>Registros hoy:</span>
-              <span className="font-medium">{summary.count}</span>
+              <span>Total de registros:</span>
+              <span className="font-medium">{count}</span>
             </div>
+            {isPeriodSummary() && summary?.daily_summary && (
+              <div className="mt-2 text-xs text-gray-500">
+                Distribución: {summary.daily_summary.length} días analizados
+              </div>
+            )}
           </div>
         </div>
       )}

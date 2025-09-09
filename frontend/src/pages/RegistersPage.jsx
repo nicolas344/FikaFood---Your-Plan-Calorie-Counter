@@ -4,11 +4,13 @@ import { Link } from 'react-router-dom';
 import CreateRegisterForm from '../components/registers/CreateRegisterForm';
 import DailySummary from '../components/registers/DailySummary';
 import RegistersList from '../components/registers/RegistersList';
+import DateFilter from '../components/registers/DateFilter';
 import Alert from '../components/common/Alert';
 
 const RegistersPage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [dateFilter, setDateFilter] = useState({ period: 'today' });
 
   const handleRegisterSuccess = (data) => {
     setSuccessMessage(data.message || 'Registro creado exitosamente');
@@ -18,6 +20,11 @@ const RegistersPage = () => {
     setTimeout(() => {
       setSuccessMessage(null);
     }, 5000);
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setDateFilter(newFilter);
+    setRefreshTrigger(prev => prev + 1);
   };
 
   return (
@@ -38,6 +45,22 @@ const RegistersPage = () => {
                 <p className="text-sm text-gray-600">Registra y analiza tus comidas con IA</p>
               </div>
             </div>
+            
+            {/* Date Filter */}
+            <div className="hidden md:block">
+              <DateFilter 
+                onFilterChange={handleFilterChange}
+                currentFilter={dateFilter}
+              />
+            </div>
+          </div>
+          
+          {/* Mobile Date Filter */}
+          <div className="md:hidden pb-4">
+            <DateFilter 
+              onFilterChange={handleFilterChange}
+              currentFilter={dateFilter}
+            />
           </div>
         </div>
       </header>
@@ -62,8 +85,14 @@ const RegistersPage = () => {
 
           {/* Resumen y lista */}
           <div className="lg:col-span-2 space-y-6">
-            <DailySummary refreshTrigger={refreshTrigger} />
-            <RegistersList refreshTrigger={refreshTrigger} />
+            <DailySummary 
+              refreshTrigger={refreshTrigger} 
+              dateFilter={dateFilter}
+            />
+            <RegistersList 
+              refreshTrigger={refreshTrigger}
+              dateFilter={dateFilter}
+            />
           </div>
         </div>
       </main>

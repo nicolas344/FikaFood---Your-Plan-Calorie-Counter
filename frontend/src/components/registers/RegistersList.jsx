@@ -2,19 +2,30 @@ import { useEffect, useState } from 'react';
 import { Clock, Camera, Zap, Activity, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import registerService from '../../services/registerService';
 
-const RegistersList = ({ refreshTrigger }) => {
+const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
   const [registers, setRegisters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedFoodItems, setExpandedFoodItems] = useState(new Set());
 
   useEffect(() => {
     loadRegisters();
-  }, [refreshTrigger]);
+  }, [refreshTrigger, dateFilter]);
 
   const loadRegisters = async () => {
     setIsLoading(true);
     try {
-      const result = await registerService.getRegisters();
+      // Construir filtros para la API
+      const filters = {};
+      
+      if (dateFilter.period === 'custom') {
+        filters.start_date = dateFilter.start_date;
+        filters.end_date = dateFilter.end_date;
+      } else {
+        const periodDates = registerService.getPeriodDates(dateFilter.period);
+        Object.assign(filters, periodDates);
+      }
+
+      const result = await registerService.getRegisters(filters);
       if (result.success) {
         setRegisters(result.data.results || result.data || []);
       }
@@ -65,6 +76,24 @@ const RegistersList = ({ refreshTrigger }) => {
     return texts[status] || status;
   };
 
+  const getFilterLabel = () => {
+    const currentFilter = dateFilter || { period: 'today' };
+    if (currentFilter.period === 'custom') {
+      return `${currentFilter.start_date} - ${currentFilter.end_date}`;
+    }
+    
+    const labels = {
+      'today': 'hoy',
+      'yesterday': 'ayer',
+      'this_week': 'esta semana',
+      'last_week': 'la semana pasada',
+      'this_month': 'este mes',
+      'last_month': 'el mes pasado'
+    };
+    
+    return labels[currentFilter.period] || 'el período seleccionado';
+  };
+
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg shadow-sm border p-4">
@@ -95,7 +124,7 @@ const RegistersList = ({ refreshTrigger }) => {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-gray-900 flex items-center">
             <Camera className="w-5 h-5 mr-2 text-blue-600" />
-            Mis Registros
+            Registros de {getFilterLabel()}
           </h2>
           <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
             {registers.length} {registers.length === 1 ? 'registro' : 'registros'}
@@ -108,8 +137,15 @@ const RegistersList = ({ refreshTrigger }) => {
         {registers.length === 0 ? (
           <div className="text-center py-8">
             <Camera className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-base font-semibold text-gray-600 mb-1">No tienes registros aún</h3>
-            <p className="text-sm text-gray-500">¡Registra tu primera comida para comenzar!</p>
+            <h3 className="text-base font-semibold text-gray-600 mb-1">
+              No hay registros para {getFilterLabel()}
+            </h3>
+            <p className="text-sm text-gray-500">
+              {dateFilter.period === 'today' 
+                ? '¡Registra tu primera comida para comenzar!' 
+                : 'Prueba con otro período de tiempo'
+              }
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
