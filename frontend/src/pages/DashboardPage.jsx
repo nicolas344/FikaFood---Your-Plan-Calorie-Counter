@@ -7,6 +7,7 @@ import Alert from '../components/common/Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import DailySummary from '../components/registers/DailySummary';
+import logoFikaFood from '../assets/logoFikaFood.png';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -59,9 +60,16 @@ const DashboardPage = () => {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">FikaFood</h1>
-              <p className="text-xs text-gray-600">Tu plan de calorías personalizado</p>
+            <div className="flex items-center space-x-3">
+              <img 
+                src={logoFikaFood} 
+                alt="FikaFood Logo" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">FikaFood</h1>
+                <p className="text-xs text-gray-600">Tu plan de calorías personalizado</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <Link

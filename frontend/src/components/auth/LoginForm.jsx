@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import Alert from '../common/Alert';
+import logoFikaFood from '../../assets/logoFikaFood.png';
 
 const LoginForm = () => {
   const { login, isLoading, error, clearError } = useAuth();
@@ -81,6 +82,13 @@ const LoginForm = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
+          <div className="flex justify-center mb-4">
+            <img 
+              src={logoFikaFood} 
+              alt="FikaFood Logo" 
+              className="h-16 w-auto"
+            />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Inicia sesión en FikaFood
           </h2>
