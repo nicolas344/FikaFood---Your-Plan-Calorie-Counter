@@ -41,21 +41,6 @@ const ChatbotPage = () => {
               <ChatInterface />
             </div>
           </div>
-
-          {/* Tips Card */}
-          <div className="max-w-4xl mx-auto mt-6">
-            <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                💡 Consejos para usar el asistente:
-              </h3>
-              <ul className="text-sm text-gray-600 space-y-2">
-                <li>• Sé específico en tus preguntas para obtener mejores respuestas</li>
-                <li>• Usa las acciones rápidas para solicitudes comunes</li>
-                <li>• El asistente puede guardar automáticamente tus metas generadas</li>
-                <li>• Puedes preguntar sobre alimentos, recetas y consejos nutricionales</li>
-              </ul>
-            </div>
-          </div>
         </div>
       </div>
     </ProtectedRoute>

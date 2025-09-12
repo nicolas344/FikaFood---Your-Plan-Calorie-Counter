@@ -25,8 +25,9 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     path('api/chatbot/', include('chatbot.urls')),
     path('api/registers/', include('registers.urls')),
+    path('api/mealplan/', include('MealPlan.urls')),
+    path('api/admin/', include('admin_panel.urls')),  # Agregar esta línea
 ]
-
 # Agregar esta configuración para servir archivos de media en desarrollo
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

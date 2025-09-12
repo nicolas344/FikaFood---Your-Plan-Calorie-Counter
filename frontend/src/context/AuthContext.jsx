@@ -124,23 +124,38 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Función para iniciar sesión
-  const login = async (credentials) => {
+  const login = async (email, password) => {
     dispatch({ type: AUTH_ACTIONS.LOGIN_START });
 
-    const result = await authService.login(credentials);
-
-    if (result.success) {
-      dispatch({
-        type: AUTH_ACTIONS.LOGIN_SUCCESS,
-        payload: { user: result.user },
-      });
-      return { success: true };
-    } else {
+    try {
+      const result = await authService.login({ email, password });
+      
+      if (result.success) {
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user: result.user },
+        });
+        
+        // Retornar información sobre el tipo de usuario para redirigir en el componente
+        return { 
+          success: true, 
+          user: result.user,
+          shouldRedirectToAdmin: result.user.is_superuser 
+        };
+      } else {
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_FAILURE,
+          payload: { error: result.error },
+        });
+        return { success: false, error: result.error };
+      }
+    } catch (error) {
+      console.error('Login error:', error);
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
-        payload: { error: result.error },
+        payload: { error: 'Error de conexión' },
       });
-      return { success: false, error: result.error };
+      return { success: false, error: 'Error de conexión' };
     }
   };
 
