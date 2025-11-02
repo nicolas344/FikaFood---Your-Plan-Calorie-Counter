@@ -3,10 +3,15 @@ import React from 'react';
 const AdminStats = ({ stats, onRefresh }) => {
   if (!stats) {
     return (
-      <div className="flex items-center justify-center py-12">
+      <div className="flex items-center justify-center py-16">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando estadísticas...</p>
+          <div className="relative inline-block">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-t-4 border-green-500 mx-auto"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-2xl">📊</span>
+            </div>
+          </div>
+          <p className="mt-4 text-gray-700 font-medium">Cargando estadísticas...</p>
         </div>
       </div>
     );
@@ -17,42 +22,44 @@ const AdminStats = ({ stats, onRefresh }) => {
       title: 'Total Usuarios',
       value: stats.total_users,
       icon: '👥',
-      color: 'bg-blue-500',
+      color: 'bg-gradient-to-br from-green-500 to-emerald-600',
       change: stats.users_change,
     },
     {
       title: 'Planes de Comida',
       value: stats.total_meal_plans,
       icon: '🍽️',
-      color: 'bg-green-500',
+      color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
       change: stats.meal_plans_change,
     },
     {
       title: 'Registros Hoy',
       value: stats.registers_today,
       icon: '📝',
-      color: 'bg-yellow-500',
+      color: 'bg-gradient-to-br from-teal-500 to-cyan-600',
       change: stats.registers_change,
     },
     {
       title: 'Conversaciones',
       value: stats.total_conversations,
       icon: '💬',
-      color: 'bg-purple-500',
+      color: 'bg-gradient-to-br from-lime-500 to-green-600',
       change: stats.conversations_change,
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Estadísticas del Sistema</h2>
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
+            Estadísticas del Sistema
+          </h2>
           <p className="text-sm text-gray-600 mt-1">Resumen completo de la actividad en FikaFood</p>
         </div>
         <button
           onClick={onRefresh}
-          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200"
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hover:shadow-lg transform hover:scale-105"
         >
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -63,35 +70,40 @@ const AdminStats = ({ stats, onRefresh }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, index) => (
-          <div key={index} className="bg-white overflow-hidden shadow-lg rounded-lg border border-gray-200 hover:shadow-xl transition-shadow duration-200">
-            <div className="p-5">
-              <div className="flex items-center">
+          <div key={index} className="bg-white/90 backdrop-blur overflow-hidden shadow-lg rounded-2xl border border-gray-200 hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+            <div className="p-6">
+              <div className="flex items-center justify-between">
                 <div className="flex-shrink-0">
-                  <div className={`w-10 h-10 ${stat.color} rounded-lg flex items-center justify-center shadow-md`}>
-                    <span className="text-white text-lg">{stat.icon}</span>
+                  <div className={`w-14 h-14 ${stat.color} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <span className="text-white text-2xl">{stat.icon}</span>
                   </div>
                 </div>
-                <div className="ml-5 w-0 flex-1">
-                  <dl>
-                    <dt className="text-sm font-medium text-gray-500 truncate">
-                      {stat.title}
-                    </dt>
-                    <dd>
-                      <div className="text-2xl font-bold text-gray-900">
-                        {stat.value?.toLocaleString() || 0}
-                      </div>
-                    </dd>
-                  </dl>
+                <div className="flex-1 ml-5 text-right">
+                  <p className="text-sm font-medium text-gray-500 truncate">
+                    {stat.title}
+                  </p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">
+                    {stat.value?.toLocaleString() || 0}
+                  </p>
                 </div>
               </div>
             </div>
             {stat.change !== undefined && (
-              <div className="bg-gray-50 px-5 py-3 border-t border-gray-200">
-                <div className="text-sm">
-                  <span className={`font-medium ${stat.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-3 border-t border-gray-200">
+                <div className="text-sm flex items-center justify-between">
+                  <span className={`font-semibold flex items-center gap-1 ${stat.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {stat.change >= 0 ? (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/>
+                      </svg>
+                    ) : (
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                      </svg>
+                    )}
                     {stat.change >= 0 ? '+' : ''}{stat.change}%
                   </span>
-                  <span className="text-gray-500"> vs mes anterior</span>
+                  <span className="text-gray-500 text-xs">vs mes anterior</span>
                 </div>
               </div>
             )}

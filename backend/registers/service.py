@@ -15,7 +15,7 @@ class GeminiAnalyzer:
             raise ValueError("GEMINI_API_KEY no configurado")
         
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.5-flash-lite')
+        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
     
     def analyze_food_image(self, image_file, user_description=""):
         """Analiza imagen y retorna datos nutricionales"""

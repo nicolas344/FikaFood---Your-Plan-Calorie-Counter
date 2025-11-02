@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../common/Input';
 import Button from '../common/Button';
@@ -79,96 +79,119 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="flex justify-center mb-4">
-            <img 
-              src={logoFikaFood} 
-              alt="FikaFood Logo" 
-              className="h-16 w-auto"
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Card with glass effect */}
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
+          <div className="text-center">
+            <div className="flex justify-center mb-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full blur-2xl opacity-20 animate-pulse"></div>
+              <img 
+                src={logoFikaFood} 
+                alt="FikaFood Logo" 
+                className="h-20 w-auto relative z-10 drop-shadow-lg"
+              />
+            </div>
+            <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+              ¡Bienvenido de nuevo!
+            </h2>
+            <p className="text-gray-600 flex items-center justify-center gap-2">
+              <Sparkles className="w-4 h-4 text-green-500" />
+              Tu plan de calorías te espera
+              <Sparkles className="w-4 h-4 text-emerald-500" />
+            </p>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Inicia sesión en FikaFood
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Tu plan de calorías personalizado
-          </p>
+          
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            {getErrorMessage() && (
+              <Alert 
+                type="error" 
+                message={getErrorMessage()}
+                onClose={clearError}
+              />
+            )}
+
+            <div className="space-y-5">
+              <div className="relative group">
+                <Input
+                  label="Email"
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  error={validationErrors.email}
+                  placeholder="tu@email.com"
+                  required
+                  className="pl-12 pr-4 transition-all duration-200 focus:shadow-lg"
+                />
+                <Mail className="absolute left-4 top-9 w-5 h-5 text-gray-400 group-hover:text-green-500 transition-colors duration-200" />
+              </div>
+
+              <div className="relative group">
+                <Input
+                  label="Contraseña"
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  error={validationErrors.password}
+                  placeholder="Tu contraseña"
+                  required
+                  className="pl-12 pr-12 transition-all duration-200 focus:shadow-lg"
+                />
+                <Lock className="absolute left-4 top-9 w-5 h-5 text-gray-400 group-hover:text-emerald-500 transition-colors duration-200" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-9 text-gray-400 hover:text-gray-700 transition-colors duration-200 focus:outline-none"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200"
+              isLoading={isLoading}
+              disabled={isLoading}
+            >
+              Iniciar Sesión
+            </Button>
+
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-4 bg-white/80 text-gray-500">¿Nuevo en FikaFood?</span>
+              </div>
+            </div>
+
+            <Link
+              to="/register"
+              className="w-full flex justify-center items-center gap-2 py-3 px-4 border-2 border-gray-300 rounded-xl text-gray-700 font-medium hover:border-green-500 hover:text-green-600 hover:bg-green-50/50 transition-all duration-200 transform hover:scale-[1.02]"
+            >
+              Crear una cuenta nueva
+            </Link>
+          </form>
         </div>
-        
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {getErrorMessage() && (
-            <Alert 
-              type="error" 
-              message={getErrorMessage()}
-              onClose={clearError}
-            />
-          )}
 
-          <div className="space-y-4">
-            <div className="relative">
-              <Input
-                label="Email"
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                error={validationErrors.email}
-                placeholder="tu@email.com"
-                required
-                className="pl-10"
-              />
-              <Mail className="absolute left-3 top-8 w-5 h-5 text-gray-400" />
-            </div>
-
-            <div className="relative">
-              <Input
-                label="Contraseña"
-                type={showPassword ? 'text' : 'password'}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                error={validationErrors.password}
-                placeholder="Tu contraseña"
-                required
-                className="pl-10 pr-10"
-              />
-              <Lock className="absolute left-3 top-8 w-5 h-5 text-gray-400" />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-8 text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <Link
-                to="/register"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
-                ¿No tienes cuenta? Regístrate
-              </Link>
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            isLoading={isLoading}
-            disabled={isLoading}
-          >
-            Iniciar Sesión
-          </Button>
-        </form>
+        {/* Footer text */}
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Al continuar, aceptas nuestros términos y condiciones
+        </p>
       </div>
     </div>
   );

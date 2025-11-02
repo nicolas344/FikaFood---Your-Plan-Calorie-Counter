@@ -81,42 +81,57 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-medium text-gray-900 mb-4">
-          Metas nutricionales diarias
+      <div className="text-center">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl shadow-lg mb-4">
+          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+          </svg>
+        </div>
+        <h3 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent mb-2">
+          Metas Nutricionales
         </h3>
-        <p className="text-sm text-gray-600 mb-6">
-          Elige cómo quieres establecer tus metas nutricionales
+        <p className="text-gray-600">
+          Elige cómo quieres establecer tus metas diarias
         </p>
       </div>
 
       {/* Selector de método */}
       <div className="space-y-3">
-        <label className="text-sm font-medium text-gray-700">
+        <label className="text-sm font-semibold text-gray-700 block">
           Método de configuración
         </label>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           <button
             type="button"
             onClick={() => handleMethodChange('manual')}
-            className={`p-3 border-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`group p-4 border-2 rounded-xl text-sm font-medium transition-all duration-200 ${
               method === 'manual'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 text-green-700 shadow-md'
+                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:shadow-md'
             }`}
           >
-            Manual
+            <div className="flex flex-col items-center gap-2">
+              <svg className={`w-8 h-8 ${method === 'manual' ? 'text-green-600' : 'text-gray-400 group-hover:text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+              </svg>
+              <span>Manual</span>
+            </div>
           </button>
           <button
             type="button"
             onClick={() => handleMethodChange('ai')}
-            className={`p-3 border-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`group p-4 border-2 rounded-xl text-sm font-medium transition-all duration-200 ${
               method === 'ai'
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-200 bg-white text-gray-700 hover:border-gray-300'
+                ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 text-green-700 shadow-md'
+                : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:shadow-md'
             }`}
           >
-            Generado por IA
+            <div className="flex flex-col items-center gap-2">
+              <svg className={`w-8 h-8 ${method === 'ai' ? 'text-green-600' : 'text-gray-400 group-hover:text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+              <span>IA</span>
+            </div>
           </button>
         </div>
       </div>
@@ -131,8 +146,8 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
 
       {/* Contenido según método seleccionado */}
       {method === 'manual' ? (
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Calorías"
               type="number"
@@ -144,6 +159,7 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               min="1200"
               max="5000"
               required
+              className="transition-all duration-200 focus:shadow-lg"
             />
             <Input
               label="Proteína (g)"
@@ -156,9 +172,10 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               min="50"
               max="300"
               required
+              className="transition-all duration-200 focus:shadow-lg"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
               label="Carbohidratos (g)"
               type="number"
@@ -170,6 +187,7 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               min="100"
               max="500"
               required
+              className="transition-all duration-200 focus:shadow-lg"
             />
             <Input
               label="Grasa (g)"
@@ -182,38 +200,66 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               min="30"
               max="150"
               required
+              className="transition-all duration-200 focus:shadow-lg"
             />
           </div>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           <div className="text-center">
-            <Button
+            <button
               type="button"
               onClick={generateAIGoals}
-              isLoading={isGenerating}
               disabled={isGenerating}
-              className="w-full"
+              className="w-full inline-flex items-center justify-center px-6 py-4 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
-              {isGenerating ? 'Generando metas...' : 'Generar metas con IA'}
-            </Button>
+              {isGenerating ? (
+                <>
+                  <svg className="animate-spin h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Generando con IA...
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                  </svg>
+                  Generar metas con IA
+                </>
+              )}
+            </button>
           </div>
 
           {generatedGoals && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-              <h4 className="font-medium text-green-800 mb-3">Metas generadas por IA:</h4>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <span className="font-medium">Calorías:</span> {generatedGoals.calories}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
+              <div className="flex items-center gap-2 mb-4">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h4 className="font-bold text-green-800 text-lg">Metas generadas por IA</h4>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-green-100">
+                  <p className="text-xs text-green-600 font-medium mb-1">Calorías</p>
+                  <p className="text-2xl font-bold text-green-700">{generatedGoals.calories}</p>
+                  <p className="text-xs text-green-600">kcal/día</p>
                 </div>
-                <div>
-                  <span className="font-medium">Proteína:</span> {generatedGoals.protein}g
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Proteína</p>
+                  <p className="text-2xl font-bold text-blue-700">{generatedGoals.protein}</p>
+                  <p className="text-xs text-blue-600">gramos/día</p>
                 </div>
-                <div>
-                  <span className="font-medium">Carbohidratos:</span> {generatedGoals.carbs}g
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-yellow-100">
+                  <p className="text-xs text-yellow-600 font-medium mb-1">Carbohidratos</p>
+                  <p className="text-2xl font-bold text-yellow-700">{generatedGoals.carbs}</p>
+                  <p className="text-xs text-yellow-600">gramos/día</p>
                 </div>
-                <div>
-                  <span className="font-medium">Grasa:</span> {generatedGoals.fat}g
+                <div className="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
+                  <p className="text-xs text-orange-600 font-medium mb-1">Grasa</p>
+                  <p className="text-2xl font-bold text-orange-700">{generatedGoals.fat}</p>
+                  <p className="text-xs text-orange-600">gramos/día</p>
                 </div>
               </div>
             </div>

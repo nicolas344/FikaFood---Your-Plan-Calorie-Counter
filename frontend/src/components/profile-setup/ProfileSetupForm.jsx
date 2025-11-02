@@ -270,60 +270,138 @@ const ProfileSetupForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Personaliza tu perfil
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            {getStepTitle()} - Paso {currentStep} de {totalSteps}
-          </p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 py-12 px-4 sm:px-6 lg:px-8">
+      {/* Decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+      </div>
+
+      <div className="max-w-2xl w-full space-y-8 relative">
+        {/* Header Card */}
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-white/20">
+          <div className="text-center">
+            <h2 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
+              Personaliza tu Perfil
+            </h2>
+            <p className="text-gray-600 text-base font-medium">
+              {getStepTitle()}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Paso {currentStep} de {totalSteps}
+            </p>
+          </div>
           
-          {/* Progress bar */}
-          <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
-            />
+          {/* Progress bar with steps */}
+          <div className="mt-5">
+            <div className="flex items-center justify-between mb-3 relative">
+              {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step, index) => (
+                <div key={step} className="flex flex-col items-center flex-1 relative">
+                  <div
+                    className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 z-10 ${
+                      step < currentStep
+                        ? 'bg-green-500 text-white shadow-lg scale-110'
+                        : step === currentStep
+                        ? 'bg-gradient-to-br from-green-600 to-emerald-600 text-white shadow-xl scale-125 ring-4 ring-green-200'
+                        : 'bg-gray-200 text-gray-400'
+                    }`}
+                  >
+                    {step < currentStep ? '✓' : step}
+                  </div>
+                  {index < totalSteps - 1 && (
+                    <div className="absolute top-5 left-1/2 w-full h-0.5 -z-0">
+                      <div className={`h-full transition-all duration-300 ${
+                        step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                      }`} />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
+              <div 
+                className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full transition-all duration-500 shadow-lg"
+                style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              />
+            </div>
           </div>
         </div>
-        
-        <div className="space-y-6">
-          {error && (
-            <Alert 
-              type="error" 
-              message={error}
-              onClose={() => setError(null)}
-            />
-          )}
 
-          {renderStep()}
+        {/* Content Card */}
+        <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
+          <div className="space-y-6">
+            {error && (
+              <Alert 
+                type="error" 
+                message={error}
+                onClose={() => setError(null)}
+              />
+            )}
 
-          <div className="flex space-x-4">
-            {currentStep > 1 && (
-              <Button 
+            {renderStep()}
+
+            <div className="flex gap-4 pt-6 border-t border-gray-200">
+              {currentStep > 1 && (
+                <button
+                  type="button" 
+                  onClick={handlePrevious}
+                  className="flex-1 inline-flex items-center justify-center px-6 py-3 border-2 border-gray-300 text-base font-medium rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isLoading}
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
+                  </svg>
+                  Anterior
+                </button>
+              )}
+              
+              <button
                 type="button" 
-                variant="outline" 
-                onClick={handlePrevious}
-                className="flex-1"
+                onClick={handleNext}
+                className={`${currentStep === 1 ? 'w-full' : 'flex-1'} inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
                 disabled={isLoading}
               >
-                Anterior
-              </Button>
-            )}
-            
-            <Button 
-              type="button" 
-              onClick={handleNext}
-              className="flex-1"
-              isLoading={isLoading}
-              disabled={isLoading}
-            >
-              {currentStep === totalSteps ? 'Completar' : 'Siguiente'}
-            </Button>
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Guardando...
+                  </>
+                ) : (
+                  <>
+                    {currentStep === totalSteps ? (
+                      <>
+                        Completar Perfil
+                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        Siguiente
+                        <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                      </>
+                    )}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Footer */}
+        <p className="text-center text-sm text-gray-600">
+          <span className="inline-flex items-center gap-2">
+            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+            </svg>
+            Tus datos están seguros y protegidos
+          </span>
+        </p>
       </div>
     </div>
   );

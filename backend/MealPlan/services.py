@@ -14,7 +14,7 @@ class MealPlanService:
             raise Exception("GEMINI_API_KEY no encontrada")
 
         self.client = genai.Client(api_key=self.api_key)
-        self.model = "gemini-1.5-flash"
+        self.model = "gemini-2.0-flash-exp"
 
     def get_user_context(self, user):
         context = f"Usuario: {user.full_name}\n"
