@@ -102,6 +102,13 @@ const ChatInterface = () => {
       >
         🥗 Consejos nutricionales
       </button>
+      <button
+        onClick={() => setInputMessage('Genera un plan alimenticio semanal')}
+        className="px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
+        disabled={isLoading}
+      >
+        🍲 Plan Alimenticio Semanal
+      </button>
     </div>
   );
 

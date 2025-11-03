@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { LogOut, User, Settings, TrendingUp, Target, Activity, Camera } from 'lucide-react';
+import { LogOut, User, Settings, TrendingUp, Target, Activity, Camera,Crown } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import authService from '../services/authService';
 import Button from '../components/common/Button';
@@ -7,6 +7,7 @@ import Alert from '../components/common/Alert';
 import { Link, useNavigate } from 'react-router-dom';
 import { MessageCircle } from 'lucide-react';
 import DailySummary from '../components/registers/DailySummary';
+import logoFikaFood from '../assets/logoFikaFood.png';
 
 const DashboardPage = () => {
   const { user, logout } = useAuth();
@@ -59,9 +60,16 @@ const DashboardPage = () => {
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">FikaFood</h1>
-              <p className="text-xs text-gray-600">Tu plan de calorías personalizado</p>
+            <div className="flex items-center space-x-3">
+              <img 
+                src={logoFikaFood} 
+                alt="FikaFood Logo" 
+                className="h-8 w-auto"
+              />
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">FikaFood</h1>
+                <p className="text-xs text-gray-600">Tu plan de calorías personalizado</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <Link
@@ -71,6 +79,14 @@ const DashboardPage = () => {
                 <Camera className="w-4 h-4 mr-1" />
                 Registrar
               </Link>
+
+              <button
+                onClick={() => navigate('/chatbot')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm font-medium flex items-center transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 mr-1" />
+                Asistente IA
+              </button>
               
               <button
                 onClick={() => navigate('/profile')}
@@ -122,6 +138,17 @@ const DashboardPage = () => {
             </div>
 
             {/* Quick Actions compactas */}
+              <button onClick={() => navigate('/ApiProducts')}
+                      className="w-full p-3 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-yellow-500"
+              >
+                  <div className="flex items-center">
+                      <Settings className="w-5 h-5 text-yellow-500 mr-3" />
+                      <div className="text-left">
+                          <h3 className="font-medium text-gray-900 text-sm">API Externa</h3>
+                          <p className="text-xs text-gray-600">Ver datos de usuarios de otro grupo</p>
+                      </div>
+                  </div>
+              </button>
             <div className="space-y-2">
               <button
                 onClick={() => navigate('/registers')}
@@ -145,6 +172,19 @@ const DashboardPage = () => {
                   <div className="text-left">
                     <h3 className="font-medium text-gray-900 text-sm">Asistente IA</h3>
                     <p className="text-xs text-gray-600">Consulta nutricional</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate('/MealPlan')}
+                className="w-full p-3 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-red-500"
+              >
+                <div className="flex items-center">
+                  <Crown className="w-5 h-5 text-red-500 mr-3" />
+                  <div className="text-left">
+                    <h3 className="font-medium text-gray-900 text-sm">Planes Alimenticios</h3>
+                    <p className="text-xs text-gray-600">Genera y gestiona planes</p>
                   </div>
                 </div>
               </button>

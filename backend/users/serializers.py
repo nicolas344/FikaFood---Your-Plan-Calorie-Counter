@@ -60,6 +60,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     dietary_info = serializers.SerializerMethodField()
     has_nutrition_goals = serializers.ReadOnlyField()
     has_water_goal = serializers.ReadOnlyField()
+    is_superuser = serializers.BooleanField(read_only=True)
     
     class Meta:
         model = User
@@ -69,9 +70,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'objective', 'dietary_preference', 'additional_restrictions', 'dietary_info',
             'calories_goal', 'protein_goal', 'carbs_goal', 'fat_goal', 'goals_method', 'has_nutrition_goals',
             'water_goal', 'water_method', 'has_water_goal',
-            'created_at', 'updated_at'
+            'is_superuser', 'created_at', 'updated_at'
         )
-        read_only_fields = ('id', 'email', 'created_at', 'updated_at')
+        read_only_fields = ('id', 'email', 'created_at', 'updated_at', 'is_superuser')
     
     def get_dietary_info(self, obj):
         return obj.get_dietary_info()
@@ -87,3 +88,10 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             'calories_goal', 'protein_goal', 'carbs_goal', 'fat_goal', 'goals_method',
             'water_goal', 'water_method'
         )
+
+class UserSerializer(serializers.ModelSerializer):
+    is_superuser = serializers.BooleanField(read_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_superuser']

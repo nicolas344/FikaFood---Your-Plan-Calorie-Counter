@@ -13,6 +13,7 @@ def food_image_upload_path(instance, filename):
 
 class FoodRegister(models.Model):
 
+    objects = None
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='food_registers')
     image = models.ImageField(upload_to=food_image_upload_path)
     description = models.TextField(

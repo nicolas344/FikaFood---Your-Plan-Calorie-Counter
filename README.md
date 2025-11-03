@@ -12,9 +12,12 @@ FikaFood es una aplicación web moderna que te ayuda a llevar un control detalla
 - 🔐 **Sistema de Autenticación Completo**: Registro, login y gestión de usuarios
 - 📊 **Dashboard Personalizado**: Visualiza tu progreso y estadísticas nutricionales
 - 🤖 **Chatbot Nutricional con IA**: Obtén recomendaciones personalizadas usando Google GenAI
+- 🍽️ **Planes Alimenticios Personalizados**: Genera planes semanales con IA adaptados a tus objetivos
+- 📄 **Exportación de Planes a PDF/JSON**: Descarga tus planes en formato profesional para llevarlos contigo
 - 🎯 **Metas Nutricionales**: Establece y sigue tus objetivos de calorías, proteínas, carbohidratos y grasas
 - 💧 **Seguimiento de Hidratación**: Control de consumo diario de agua
 - 📱 **Diseño Responsivo**: Interfaz moderna construida con Tailwind CSS
+- 🏗️ **Arquitectura SOLID**: Implementación con principios de inversión de dependencias
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -32,6 +35,7 @@ FikaFood es una aplicación web moderna que te ayuda a llevar un control detalla
 - **Django REST Framework Simple JWT** - Autenticación JWT para Django
 - **Django CORS Headers** - Manejo de CORS
 - **Google GenAI** - Integración con IA de Google
+- **ReportLab** - Generación de PDFs profesionales
 - **SQLite3** - Base de datos
 - **Python-dotenv** - Gestión de variables de entorno
 - **PyJWT** - Manejo de tokens JWT
@@ -134,4 +138,50 @@ Una vez que ambos servidores estén ejecutándose:
 
 1. **Backend**: `http://127.0.0.1:8000/`
 2. **Frontend**: `http://localhost:5173/`
+
+## 📄 Exportación de Planes Alimenticios (Nueva Funcionalidad)
+
+FikaFood ahora incluye un sistema de exportación de planes alimenticios implementado con **Inversión de Dependencias** (principio SOLID):
+
+### Características
+
+- ✅ **Exportación a PDF**: Descarga tus planes en formato PDF profesional y estético
+- ✅ **Exportación a JSON**: Obtén tus datos en formato JSON para integraciones
+- ✅ **Múltiples puntos de descarga**: Disponible en:
+  - Al generar un nuevo plan
+  - En la lista de planes guardados
+  - En el modal de detalle de cada plan
+- ✅ **Arquitectura extensible**: Fácil agregar nuevos formatos (CSV, XML, DOCX, etc.)
+
+### Uso
+
+1. Genera un plan alimenticio desde la interfaz
+2. Haz clic en **"Descargar PDF"** o **"Descargar JSON"**
+3. El archivo se descargará automáticamente a tu dispositivo
+
+### Para Desarrolladores
+
+La implementación sigue el **Principio de Inversión de Dependencias (DIP)**:
+
+```python
+# Interfaz abstracta
+class IPlanExporter(ABC):
+    @abstractmethod
+    def export(self, meal_plan, user) -> BytesIO: pass
+
+# Implementaciones concretas
+class PDFPlanExporter(IPlanExporter): ...
+class JSONPlanExporter(IPlanExporter): ...
+```
+
+**Ver documentación completa:** [`IMPLEMENTACION_PDF.md`](./IMPLEMENTACION_PDF.md)
+
+**Agregar nuevos formatos:** La arquitectura permite agregar nuevos exportadores sin modificar código existente.
+
+### Endpoints API
+
+```
+GET /api/mealplan/<plan_id>/export/?format=pdf
+GET /api/mealplan/<plan_id>/export/?format=json
+```
  
