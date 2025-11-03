@@ -11,3 +11,4 @@ python-dotenv
 google-genai
 pillow
 google-generativeai
+reportlab

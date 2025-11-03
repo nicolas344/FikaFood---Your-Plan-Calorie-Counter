@@ -62,6 +62,46 @@ const mealPlanService = {
         error: error.response?.data?.error || 'Error al cargar plan'
       };
     }
+  },
+
+  // Descargar plan en PDF
+  downloadMealPlanPdf: async (planId, style = 'simple') => {
+    try {
+      const response = await api.get(`/mealplan/${planId}/pdf/`, {
+        params: { style },
+        responseType: 'blob',
+      });
+
+      const disposition = response.headers['content-disposition'] || '';
+      const match = disposition.match(/filename="?([^";]+)"?/i);
+      const filename = match ? match[1] : `plan_${planId}.pdf`;
+
+      return {
+        success: true,
+        data: response.data,
+        filename,
+      };
+    } catch (error) {
+      console.error('Error downloading meal plan pdf:', error);
+      let message = 'Error al descargar el PDF';
+
+      if (error.response?.data) {
+        try {
+          const text = await error.response.data.text();
+          const parsed = JSON.parse(text);
+          message = parsed?.error || message;
+        } catch (parseError) {
+          // ignorar, usamos mensaje por defecto
+        }
+      } else if (error.message) {
+        message = error.message;
+      }
+
+      return {
+        success: false,
+        error: message,
+      };
+    }
   }
 
 };
