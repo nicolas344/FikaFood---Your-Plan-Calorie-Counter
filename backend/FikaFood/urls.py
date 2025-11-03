@@ -27,7 +27,7 @@ urlpatterns = [
     path('api/registers/', include('registers.urls')),
     path('api/mealplan/', include('MealPlan.urls')),
     path('api/admin/', include('admin_panel.urls')),
-    path('api/Externa/', include('ExternalApi.urls')), # Agregar esta línea
+    path('api/External/', include('ExternalApi.urls')), # Agregar esta línea
 ]
 # Agregar esta configuración para servir archivos de media en desarrollo
 if settings.DEBUG:
