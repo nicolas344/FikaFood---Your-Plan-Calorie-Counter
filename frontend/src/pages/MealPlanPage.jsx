@@ -10,6 +10,8 @@ const MealPlanPage = () => {
   const [newPlan, setNewPlan] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [pdfStyle, setPdfStyle] = useState("simple");
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState(null);
 
@@ -50,6 +52,7 @@ const MealPlanPage = () => {
     const result = await mealPlanService.getMealPlan(id);
     if (result.success) {
       setSelectedPlan(result.data);
+      setPdfStyle("simple");
     } else {
       setError(result.error);
     }
@@ -69,6 +72,39 @@ const MealPlanPage = () => {
       setError(result.error);
     }
     setLoading(false);
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!selectedPlan) return;
+    setDownloading(true);
+    setError("");
+    const result = await mealPlanService.downloadMealPlanPdf(
+      selectedPlan.id,
+      pdfStyle
+    );
+
+    if (result.success) {
+      const blob = result.data;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", result.filename || `plan_${selectedPlan.id}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      setSuccessMessage("📄 PDF descargado correctamente");
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } else {
+      setError(result.error);
+    }
+
+    setDownloading(false);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedPlan(null);
+    setDownloading(false);
   };
 
   return (
@@ -223,7 +259,7 @@ const MealPlanPage = () => {
             <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
               <button
                 className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
-                onClick={() => setSelectedPlan(null)}
+                onClick={handleCloseDetail}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -236,6 +272,28 @@ const MealPlanPage = () => {
               <p className="text-sm mb-4">
                 Rango: {selectedPlan.start_date} → {selectedPlan.end_date}
               </p>
+
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+                <label className="flex flex-col text-sm text-gray-600">
+                  <span className="font-medium text-gray-700 mb-1">Formato de PDF</span>
+                  <select
+                    value={pdfStyle}
+                    onChange={(event) => setPdfStyle(event.target.value)}
+                    className="rounded-md border-gray-300 focus:border-green-500 focus:ring focus:ring-green-200 focus:ring-opacity-50"
+                  >
+                    <option value="simple">Simple</option>
+                    <option value="estilizado">Estilizado</option>
+                  </select>
+                </label>
+                <Button
+                  onClick={handleDownloadPdf}
+                  disabled={downloading}
+                  className="flex items-center gap-2"
+                >
+                  {downloading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  Descargar PDF
+                </Button>
+              </div>
 
               <div className="space-y-4">
                 {Object.entries(selectedPlan.plan).map(([dia, comidas]) => {
