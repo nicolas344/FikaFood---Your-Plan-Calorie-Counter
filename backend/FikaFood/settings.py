@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'chatbot',
     'MealPlan',
     'progress',
-    'admin_panel', 
+    'admin_panel',
+    'ExternalApi',
 ]
 
 MIDDLEWARE = [

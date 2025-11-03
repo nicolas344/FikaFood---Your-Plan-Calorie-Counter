@@ -12,6 +12,7 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css'
 import MealPlanPage from "./pages/MealPlanPage.jsx";
+import ApiProducts from "./pages/ApiProducts.jsx";
 
 function App() {
   return (
@@ -29,9 +30,11 @@ function AppRoutes() {
   return (
     <div className="App">
       <Routes>
+          <Route path="/ApiProducts" element={<ApiProducts />} />
         {/* Ruta raíz - redirige según autenticación */}
+
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
-        
+
         {/* Rutas públicas - solo accesibles si NO está autenticado */}
         <Route path="/login" element={
           <PublicRoute>
