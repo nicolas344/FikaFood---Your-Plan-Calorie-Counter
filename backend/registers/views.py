@@ -517,3 +517,4 @@ def reanalyze_register(request, register_id):
             'error': 'Error en re-análisis',
             'details': str(e)
         }, status=status.HTTP_400_BAD_REQUEST)
+
