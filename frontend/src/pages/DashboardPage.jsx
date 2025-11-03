@@ -138,6 +138,17 @@ const DashboardPage = () => {
             </div>
 
             {/* Quick Actions compactas */}
+              <button onClick={() => navigate('/ApiProducts')}
+                      className="w-full p-3 bg-white rounded-lg shadow hover:shadow-md transition-shadow border-l-4 border-yellow-500"
+              >
+                  <div className="flex items-center">
+                      <Settings className="w-5 h-5 text-yellow-500 mr-3" />
+                      <div className="text-left">
+                          <h3 className="font-medium text-gray-900 text-sm">API Externa</h3>
+                          <p className="text-xs text-gray-600">Ver datos de usuarios de otro grupo</p>
+                      </div>
+                  </div>
+              </button>
             <div className="space-y-2">
               <button
                 onClick={() => navigate('/registers')}
