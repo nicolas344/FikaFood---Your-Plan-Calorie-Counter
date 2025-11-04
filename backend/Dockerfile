@@ -28,13 +28,6 @@ RUN mkdir -p staticfiles media data
 # Exponer puerto
 EXPOSE 8000
 
-# Script de inicio - sin usar $PORT en el CMD
-CMD python manage.py migrate --noinput && \
-    python manage.py collectstatic --noinput && \
-    gunicorn FikaFood.wsgi:application \
-        --bind 0.0.0.0:$PORT \
-        --workers 2 \
-        --timeout 120 \
-        --access-logfile - \
-        --error-logfile - \
-        --log-level debug
+# CMD vacío - Railway usará Custom Start Command desde Settings
+# Si no se configura Custom Start Command, usar este fallback:
+CMD ["sh", "-c", "echo 'ERROR: No start command configured. Please set Custom Start Command in Railway Settings.' && exit 1"]
