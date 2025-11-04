@@ -29,4 +29,4 @@ RUN mkdir -p staticfiles media data
 EXPOSE 8000
 
 # Script de inicio (usa $PORT para Railway o 8000 por defecto)
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn FikaFood.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3"]
+CMD ["sh", "-c", "python create_superuser.py && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn FikaFood.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3"]
