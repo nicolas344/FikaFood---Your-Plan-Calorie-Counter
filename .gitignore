@@ -39,3 +39,7 @@ backups/
 *.swp
 *.swo
 .DS_Store
+
+RAILWAY_DEPLOYMENT.md 
+RESUMEN_RAILWAY.md 
+SIGUIENTE_PASO.md
