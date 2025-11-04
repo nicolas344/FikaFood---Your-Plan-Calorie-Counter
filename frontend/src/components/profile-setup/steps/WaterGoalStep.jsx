@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Input from '../../common/Input';
 import Button from '../../common/Button';
 import Alert from '../../common/Alert';
+import chatbotService from '../../../services/chatbotService';
 
 const WaterGoalStep = ({ formData, onChange, validationErrors }) => {
   const { t } = useTranslation();
@@ -27,21 +28,10 @@ const WaterGoalStep = ({ formData, onChange, validationErrors }) => {
     setError(null);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/chatbot/chat/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: JSON.stringify({
-          message: 'cuánta agua debo beber'
-        })
-      });
-
-      const data = await response.json();
+      const result = await chatbotService.sendMessage('cuánta agua debo beber');
       
-      if (data.success) {
-        const responseText = data.response;
+      if (result.success && result.data) {
+        const responseText = result.data.response || '';
         const waterMatch = responseText.match(/(\d{3,4})\s*ml/i);
 
         if (waterMatch) {

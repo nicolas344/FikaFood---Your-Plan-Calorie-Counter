@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import api from "../services/api";
 
 function Products() {
   const { t } = useTranslation();
@@ -7,10 +8,9 @@ function Products() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:8000/api/External/productos/")
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.results);
+    api.get("/External/productos/")
+      .then((res) => {
+        setProducts(res.data.results || []);
         setLoading(false);
       })
       .catch((err) => {
