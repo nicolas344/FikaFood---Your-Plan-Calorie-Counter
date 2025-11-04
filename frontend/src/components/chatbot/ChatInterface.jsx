@@ -79,38 +79,55 @@ const ChatInterface = () => {
     }
   };
 
-  const QuickActions = () => (
-    <div className="flex flex-wrap gap-2 mb-4">
-      <button
-        onClick={() => setInputMessage('Genera mis metas nutricionales')}
-        className="px-3 py-2 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors"
-        disabled={isLoading}
-      >
-        {t('chatbot.quickActions.generateGoals')}
-      </button>
-      <button
-        onClick={() => setInputMessage('¿Cuánta agua debo beber?')}
-        className="px-3 py-2 bg-cyan-100 text-cyan-700 rounded-full text-sm hover:bg-cyan-200 transition-colors"
-        disabled={isLoading}
-      >
-        {t('chatbot.quickActions.calculateWater')}
-      </button>
-      <button
-        onClick={() => setInputMessage('Dame consejos para una alimentación saludable')}
-        className="px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
-        disabled={isLoading}
-      >
-        {t('chatbot.quickActions.healthyTips')}
-      </button>
-      <button
-        onClick={() => setInputMessage('Genera un plan alimenticio semanal')}
-        className="px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
-        disabled={isLoading}
-      >
-        {t('chatbot.quickActions.weeklyPlan')}
-      </button>
-    </div>
-  );
+  const QuickActions = () => {
+    const quickActionMessages = {
+      generateGoals: i18n.language === 'es' 
+        ? 'Genera mis metas nutricionales' 
+        : 'Generate my nutritional goals',
+      calculateWater: i18n.language === 'es'
+        ? '¿Cuánta agua debo beber?'
+        : 'How much water should I drink?',
+      healthyTips: i18n.language === 'es'
+        ? 'Dame consejos para una alimentación saludable'
+        : 'Give me tips for healthy eating',
+      weeklyPlan: i18n.language === 'es'
+        ? 'Genera un plan alimenticio semanal'
+        : 'Generate a weekly meal plan'
+    };
+
+    return (
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          onClick={() => setInputMessage(quickActionMessages.generateGoals)}
+          className="px-3 py-2 bg-blue-100 text-blue-700 rounded-full text-sm hover:bg-blue-200 transition-colors"
+          disabled={isLoading}
+        >
+          {t('chatbot.quickActions.generateGoals')}
+        </button>
+        <button
+          onClick={() => setInputMessage(quickActionMessages.calculateWater)}
+          className="px-3 py-2 bg-cyan-100 text-cyan-700 rounded-full text-sm hover:bg-cyan-200 transition-colors"
+          disabled={isLoading}
+        >
+          {t('chatbot.quickActions.calculateWater')}
+        </button>
+        <button
+          onClick={() => setInputMessage(quickActionMessages.healthyTips)}
+          className="px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
+          disabled={isLoading}
+        >
+          {t('chatbot.quickActions.healthyTips')}
+        </button>
+        <button
+          onClick={() => setInputMessage(quickActionMessages.weeklyPlan)}
+          className="px-3 py-2 bg-green-100 text-green-700 rounded-full text-sm hover:bg-green-200 transition-colors"
+          disabled={isLoading}
+        >
+          {t('chatbot.quickActions.weeklyPlan')}
+        </button>
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col h-full bg-white rounded-lg shadow-lg border">
