@@ -10,6 +10,8 @@ staticfiles/
 
 # Environment variables
 .env
+.env.local
+.env.production
 
 # Virtual environment
 venv/
@@ -19,3 +21,21 @@ env/
 # React
 node_modules/
 build/
+dist/
+
+# Database
+*.sqlite3
+*.db
+
+# Docker
+.docker/
+
+# Backups
+backups/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

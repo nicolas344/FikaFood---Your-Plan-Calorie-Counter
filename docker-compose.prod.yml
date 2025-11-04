@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Backend Django
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fikafood_backend_prod
+    restart: unless-stopped
+    volumes:
+      - sqlite_data:/app/data
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DATABASE_PATH=/app/data/db.sqlite3
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS}
+    networks:
+      - fikafood_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/admin/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend React (Producción con Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: fikafood_frontend_prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    networks:
+      - fikafood_network
+    depends_on:
+      - backend
+
+networks:
+  fikafood_network:
+    driver: bridge
+
+volumes:
+  sqlite_data:
+  static_volume:
+  media_volume:

@@ -12,3 +12,5 @@ google-genai
 pillow
 google-generativeai
 reportlab
+gunicorn
+whitenoise
