@@ -28,5 +28,7 @@ RUN mkdir -p staticfiles media data
 # Exponer puerto
 EXPOSE 8000
 
-# Script de inicio (usa $PORT para Railway o 8000 por defecto)
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn FikaFood.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3"]
+# Script de inicio
+CMD python manage.py migrate && \
+    python manage.py collectstatic --noinput && \
+    exec gunicorn FikaFood.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 3 --access-logfile - --error-logfile -
