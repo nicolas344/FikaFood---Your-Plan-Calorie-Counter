@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { ChevronDown } from 'lucide-react';
 
 const Select = ({ 
@@ -6,11 +7,14 @@ const Select = ({
   value, 
   onChange, 
   options = [], 
-  placeholder = "Selecciona una opción",
+  placeholder,
   error,
   className = "",
   ...props 
 }) => {
+  const { t } = useTranslation();
+  const defaultPlaceholder = placeholder || t('common.selectOption');
+  
   return (
     <div className="space-y-1">
       {label && (
@@ -32,7 +36,7 @@ const Select = ({
           `}
           {...props}
         >
-          <option value="">{placeholder}</option>
+          <option value="">{defaultPlaceholder}</option>
           {options.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

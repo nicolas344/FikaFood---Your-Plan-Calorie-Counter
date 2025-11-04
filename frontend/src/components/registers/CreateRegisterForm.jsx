@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Camera, Upload, Loader2 } from 'lucide-react';
 import Button from '../common/Button';
 import Input from '../common/Input';
@@ -6,6 +7,7 @@ import Alert from '../common/Alert';
 import registerService from '../../services/registerService';
 
 const CreateRegisterForm = ({ onSuccess }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     image: null,
     description: ''
@@ -19,7 +21,6 @@ const CreateRegisterForm = ({ onSuccess }) => {
     if (file) {
       setFormData(prev => ({ ...prev, image: file }));
       
-      // Crear preview
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -33,7 +34,7 @@ const CreateRegisterForm = ({ onSuccess }) => {
     setError(null);
 
     if (!formData.image) {
-      setError('Por favor selecciona una imagen');
+      setError(t('registers.form.selectImage'));
       return;
     }
 
@@ -47,19 +48,17 @@ const CreateRegisterForm = ({ onSuccess }) => {
       const result = await registerService.createRegister(submitData);
 
       if (result.success) {
-        // Resetear formulario
         setFormData({ image: null, description: '' });
         setImagePreview(null);
         
-        // Llamar callback de éxito
         if (onSuccess) {
           onSuccess(result.data);
         }
       } else {
-        setError(result.error?.message || 'Error al crear registro');
+        setError(result.error?.message || t('registers.form.errorCreating'));
       }
     } catch (err) {
-      setError('Error de conexión');
+      setError(t('registers.form.connectionError'));
     } finally {
       setIsLoading(false);
     }
@@ -69,7 +68,7 @@ const CreateRegisterForm = ({ onSuccess }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
         <Camera className="w-5 h-5 mr-2" />
-        Registrar Comida
+        {t('registers.form.title')}
       </h2>
 
       {error && (
@@ -82,10 +81,9 @@ const CreateRegisterForm = ({ onSuccess }) => {
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Selector de imagen */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Imagen de la comida *
+            {t('registers.form.foodImage')}
           </label>
           
           <div className="border-2 border-dashed border-gray-300 rounded-lg p-6">
@@ -106,7 +104,7 @@ const CreateRegisterForm = ({ onSuccess }) => {
                   }}
                   className="w-full"
                 >
-                  Cambiar imagen
+                  {t('registers.form.changeImage')}
                 </Button>
               </div>
             ) : (
@@ -117,7 +115,7 @@ const CreateRegisterForm = ({ onSuccess }) => {
                     htmlFor="image-upload"
                     className="cursor-pointer bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
                   >
-                    Seleccionar imagen
+                    {t('registers.form.selectImageButton')}
                   </label>
                   <input
                     id="image-upload"
@@ -128,23 +126,21 @@ const CreateRegisterForm = ({ onSuccess }) => {
                   />
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  PNG, JPG, JPEG hasta 10MB
+                  {t('registers.form.imageFormats')}
                 </p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Descripción opcional */}
         <Input
-          label="Descripción (opcional)"
+          label={t('registers.form.descriptionOptional')}
           value={formData.description}
           onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-          placeholder="Describe tu comida..."
+          placeholder={t('registers.form.descriptionPlaceholder')}
           rows={3}
         />
 
-        {/* Botón submit */}
         <Button
           type="submit"
           isLoading={isLoading}
@@ -154,10 +150,10 @@ const CreateRegisterForm = ({ onSuccess }) => {
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Analizando imagen...
+              {t('registers.form.analyzingImage')}
             </>
           ) : (
-            'Analizar Comida'
+            t('registers.form.analyzeFood')
           )}
         </Button>
       </form>

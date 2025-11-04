@@ -1,19 +1,21 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar, Clock, ChevronDown, Check, X } from 'lucide-react';
 
 const DateFilter = ({ onFilterChange, currentFilter }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [showCustomDate, setShowCustomDate] = useState(false);
   const [customStartDate, setCustomStartDate] = useState('');
   const [customEndDate, setCustomEndDate] = useState('');
 
   const filterOptions = [
-    { id: 'today', label: 'Hoy', icon: Clock, color: 'blue' },
-    { id: 'yesterday', label: 'Ayer', icon: Clock, color: 'gray' },
-    { id: 'this_week', label: 'Esta semana', icon: Calendar, color: 'green' },
-    { id: 'last_week', label: 'Semana pasada', icon: Calendar, color: 'yellow' },
-    { id: 'this_month', label: 'Este mes', icon: Calendar, color: 'purple' },
-    { id: 'last_month', label: 'Mes pasado', icon: Calendar, color: 'pink' },
+    { id: 'today', label: t('registers.periodLabels.today'), icon: Clock, color: 'blue' },
+    { id: 'yesterday', label: t('registers.periodLabels.yesterday'), icon: Clock, color: 'gray' },
+    { id: 'this_week', label: t('registers.periodLabels.thisWeek'), icon: Calendar, color: 'green' },
+    { id: 'last_week', label: t('registers.periodLabels.lastWeek'), icon: Calendar, color: 'yellow' },
+    { id: 'this_month', label: t('registers.periodLabels.thisMonth'), icon: Calendar, color: 'purple' },
+    { id: 'last_month', label: t('registers.periodLabels.lastMonth'), icon: Calendar, color: 'pink' },
   ];
 
   const handleFilterSelect = (filterId) => {
@@ -45,7 +47,7 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
       return `${currentFilter.start_date} - ${currentFilter.end_date}`;
     }
     const option = filterOptions.find(opt => opt.id === currentFilter.period);
-    return option ? option.label : 'Hoy';
+    return option ? option.label : t('registers.periodLabels.today');
   };
 
   const getColorClasses = (color, isSelected = false) => {
@@ -74,7 +76,6 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
 
   return (
     <div className="relative">
-      {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -84,13 +85,11 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
         <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
-      {/* Dropdown Menu */}
       {isOpen && (
         <div className="absolute top-full left-0 mt-2 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
           <div className="p-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Filtrar por período</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3">{t('registers.filter.filterByPeriod')}</h3>
             
-            {/* Quick Filters */}
             <div className="space-y-2 mb-4">
               {filterOptions.map((option) => {
                 const Icon = option.icon;
@@ -114,7 +113,6 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
               })}
             </div>
 
-            {/* Custom Date Range */}
             <div className="border-t pt-4">
               {!showCustomDate ? (
                 <button
@@ -122,12 +120,12 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
                   className="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"
                 >
                   <Calendar className="w-4 h-4 mr-3" />
-                  <span>Período personalizado</span>
+                  <span>{t('registers.filter.customPeriod')}</span>
                 </button>
               ) : (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-medium text-gray-900">Período personalizado</h4>
+                    <h4 className="text-sm font-medium text-gray-900">{t('registers.filter.customPeriod')}</h4>
                     <button
                       onClick={handleCustomDateCancel}
                       className="p-1 text-gray-400 hover:text-gray-600"
@@ -139,7 +137,7 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Desde
+                        {t('registers.filter.from')}
                       </label>
                       <input
                         type="date"
@@ -150,7 +148,7 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">
-                        Hasta
+                        {t('registers.filter.to')}
                       </label>
                       <input
                         type="date"
@@ -167,13 +165,13 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
                       disabled={!customStartDate || !customEndDate}
                       className="flex-1 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
-                      Aplicar
+                      {t('registers.filter.apply')}
                     </button>
                     <button
                       onClick={handleCustomDateCancel}
                       className="px-3 py-2 text-gray-600 text-sm font-medium hover:text-gray-800 transition-colors"
                     >
-                      Cancelar
+                      {t('registers.filter.cancel')}
                     </button>
                   </div>
                 </div>
@@ -183,7 +181,6 @@ const DateFilter = ({ onFilterChange, currentFilter }) => {
         </div>
       )}
 
-      {/* Overlay */}
       {isOpen && (
         <div 
           className="fixed inset-0 z-40" 

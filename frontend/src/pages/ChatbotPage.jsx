@@ -1,18 +1,20 @@
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import ProtectedRoute from '../components/common/ProtectedRoute';
 import ChatInterface from '../components/chatbot/ChatInterface';
 import { MessageCircle, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const ChatbotPage = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
         <div className="container mx-auto px-4 py-6">
-          {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center">
               <button
@@ -25,14 +27,15 @@ const ChatbotPage = () => {
                 <MessageCircle className="w-8 h-8 text-blue-600 mr-3" />
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">
-                    Asistente Nutricional
+                    {t('chatbot.title')}
                   </h1>
                   <p className="text-gray-600">
-                    Hola {user?.first_name || 'Usuario'}, ¿en qué te puedo ayudar hoy?
+                    {t('chatbot.greeting', { name: user?.first_name || 'Usuario' })}
                   </p>
                 </div>
               </div>
             </div>
+            <LanguageSwitcher />
           </div>
 
           {/* Chat Interface */}

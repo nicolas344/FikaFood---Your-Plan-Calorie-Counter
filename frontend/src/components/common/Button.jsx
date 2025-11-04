@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Button = ({ 
   children, 
@@ -10,6 +10,8 @@ const Button = ({
   className = "",
   ...props 
 }) => {
+  const { t } = useTranslation();
+  
   const baseClasses = "px-4 py-2 rounded-md font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors";
   
   const variants = {
@@ -34,7 +36,7 @@ const Button = ({
       {isLoading ? (
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-          <span className="ml-2">Cargando...</span>
+          <span className="ml-2">{t('common.loading')}</span>
         </div>
       ) : (
         children

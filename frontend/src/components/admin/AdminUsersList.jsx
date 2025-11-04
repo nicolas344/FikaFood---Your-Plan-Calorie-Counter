@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminService } from '../../services/adminService';
 
 const AdminUsersList = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,13 +27,13 @@ const AdminUsersList = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este usuario?')) {
+    if (window.confirm(t('admin.users.confirmDelete'))) {
       try {
         await adminService.deleteUser(userId);
-        loadUsers(); // Recargar la lista
+        loadUsers();
       } catch (error) {
         console.error('Error deleting user:', error);
-        alert('Error al eliminar usuario');
+        alert(t('admin.users.errorDeleting'));
       }
     }
   };
@@ -46,7 +48,7 @@ const AdminUsersList = () => {
               <span className="text-2xl">👥</span>
             </div>
           </div>
-          <p className="mt-4 text-gray-700 font-medium">Cargando usuarios...</p>
+          <p className="mt-4 text-gray-700 font-medium">{t('admin.users.loading')}</p>
         </div>
       </div>
     );
@@ -57,9 +59,9 @@ const AdminUsersList = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
-            Gestión de Usuarios
+            {t('admin.users.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">Administra los usuarios de la plataforma</p>
+          <p className="text-sm text-gray-600 mt-1">{t('admin.users.subtitle')}</p>
         </div>
         <button
           onClick={loadUsers}
@@ -68,7 +70,7 @@ const AdminUsersList = () => {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Actualizar
+          {t('admin.refresh')}
         </button>
       </div>
 
@@ -91,7 +93,7 @@ const AdminUsersList = () => {
                           {user.email}
                         </p>
                         <p className="text-sm text-gray-500">
-                          ID: {user.id} • Registrado: {new Date(user.date_joined).toLocaleDateString()}
+                          ID: {user.id} • {t('admin.users.registered')}: {new Date(user.date_joined).toLocaleDateString()}
                         </p>
                       </div>
                     </div>
@@ -101,11 +103,11 @@ const AdminUsersList = () => {
                     <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                       user.is_active ? 'bg-green-100 text-green-800 border border-green-200' : 'bg-red-100 text-red-800 border border-red-200'
                     }`}>
-                      {user.is_active ? '✓ Activo' : '✗ Inactivo'}
+                      {user.is_active ? t('admin.users.active') : t('admin.users.inactive')}
                     </span>
                     {user.is_superuser && (
                       <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
-                        🔑 Admin
+                        {t('admin.users.admin')}
                       </span>
                     )}
                   </div>
@@ -118,7 +120,7 @@ const AdminUsersList = () => {
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
-                      Último acceso: {user.last_login ? new Date(user.last_login).toLocaleString() : 'Nunca'}
+                      {t('admin.users.lastAccess')}: {user.last_login ? new Date(user.last_login).toLocaleString() : t('admin.users.never')}
                     </span>
                   </div>
                   
@@ -130,12 +132,12 @@ const AdminUsersList = () => {
                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         : 'bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg transform hover:scale-105'
                     }`}
-                    title={user.is_superuser ? 'No se puede eliminar un administrador' : 'Eliminar usuario'}
+                    title={user.is_superuser ? t('admin.users.cannotDeleteAdmin') : t('admin.users.deleteUser')}
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    Eliminar
+                    {t('admin.users.deleteUser')}
                   </button>
                 </div>
               </div>
@@ -154,17 +156,17 @@ const AdminUsersList = () => {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
           </svg>
-          Anterior
+          {t('admin.users.previous')}
         </button>
         <span className="text-sm font-medium text-gray-700 bg-green-50 px-4 py-2 rounded-lg border border-green-200">
-          Página {currentPage} de {totalPages}
+          {t('admin.users.page', { current: currentPage, total: totalPages })}
         </span>
         <button
           onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           disabled={currentPage === totalPages}
           className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
         >
-          Siguiente
+          {t('admin.users.next')}
           <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
           </svg>

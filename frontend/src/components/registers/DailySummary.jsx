@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { TrendingUp, Target, Activity, Award, Calendar } from 'lucide-react';
 import registerService from '../../services/registerService';
 
 const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
+  const { t } = useTranslation();
   const [summary, setSummary] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -15,16 +17,13 @@ const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
     try {
       let result;
       
-      // Asegurar que dateFilter existe y tiene period
       const currentFilter = dateFilter || { period: 'today' };
       
       if (currentFilter.period === 'today' || currentFilter.period === 'yesterday') {
-        // Para día específico, usar daily-summary
         const periodDates = registerService.getPeriodDates(currentFilter.period);
         const targetDate = periodDates.date;
         result = await registerService.getDailySummary(targetDate);
       } else {
-        // Para períodos más largos, usar period-summary
         const filters = {};
         
         if (currentFilter.period === 'custom') {
@@ -55,16 +54,7 @@ const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
       return `${currentFilter.start_date} - ${currentFilter.end_date}`;
     }
     
-    const labels = {
-      'today': 'Hoy',
-      'yesterday': 'Ayer',
-      'this_week': 'Esta semana',
-      'last_week': 'Semana pasada',
-      'this_month': 'Este mes',
-      'last_month': 'Mes pasado'
-    };
-    
-    return labels[currentFilter.period] || 'Período seleccionado';
+    return t(`registers.periodLabels.${currentFilter.period}`) || t('registers.periodLabels.selected');
   };
 
   const isPeriodSummary = () => {
@@ -99,92 +89,89 @@ const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6 flex items-center">
         <TrendingUp className="w-5 h-5 mr-2" />
-        Resumen - {getFilterLabel()}
+        {t('registers.summary.title')} - {getFilterLabel()}
       </h2>
 
       {count === 0 ? (
         <div className="text-center py-8">
           <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-          <p className="text-gray-500">No hay registros para {getFilterLabel().toLowerCase()}</p>
+          <p className="text-gray-500">{t('registers.noRegisters')} {getFilterLabel().toLowerCase()}</p>
           <p className="text-sm text-gray-400">
             {(dateFilter?.period || 'today') === 'today' 
-              ? '¡Registra tu primera comida!' 
-              : 'Prueba con otro período'
+              ? t('registers.registerFirstMeal')
+              : t('registers.tryAnotherPeriod')
             }
           </p>
         </div>
       ) : (
         <div className="space-y-6">
-          {/* Estadísticas principales */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-blue-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-blue-600">
                 {Math.round(totals.calories || 0)}
               </div>
-              <div className="text-sm text-blue-800">Calorías</div>
+              <div className="text-sm text-blue-800">{t('registers.summary.calories')}</div>
             </div>
             
             <div className="bg-green-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-green-600">
                 {Math.round(totals.protein || 0)}g
               </div>
-              <div className="text-sm text-green-800">Proteínas</div>
+              <div className="text-sm text-green-800">{t('registers.summary.proteins')}</div>
             </div>
             
             <div className="bg-yellow-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-yellow-600">
                 {Math.round(totals.carbs || 0)}g
               </div>
-              <div className="text-sm text-yellow-800">Carbohidratos</div>
+              <div className="text-sm text-yellow-800">{t('registers.summary.carbohydrates')}</div>
             </div>
             
             <div className="bg-purple-50 p-4 rounded-lg">
               <div className="text-2xl font-bold text-purple-600">
                 {Math.round(totals.fat || 0)}g
               </div>
-              <div className="text-sm text-purple-800">Grasas</div>
+              <div className="text-sm text-purple-800">{t('registers.summary.fats')}</div>
             </div>
           </div>
 
-          {/* Información adicional para períodos largos */}
           {isPeriodSummary() && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-gray-600">
                   {summary?.days_in_period || 0}
                 </div>
-                <div className="text-sm text-gray-800">Días en período</div>
+                <div className="text-sm text-gray-800">{t('registers.summary.daysInPeriod')}</div>
               </div>
               
               <div className="bg-indigo-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-indigo-600">
                   {summary?.days_with_records || 0}
                 </div>
-                <div className="text-sm text-indigo-800">Días con registros</div>
+                <div className="text-sm text-indigo-800">{t('registers.summary.daysWithRecords')}</div>
               </div>
               
               <div className="bg-teal-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-teal-600">
                   {Math.round((totals.calories || 0) / (summary?.days_with_records || 1))}
                 </div>
-                <div className="text-sm text-teal-800">Cal/día promedio</div>
+                <div className="text-sm text-teal-800">{t('registers.summary.avgCaloriesPerDay')}</div>
               </div>
               
               <div className="bg-orange-50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-orange-600">
                   {Math.round(((summary?.days_with_records || 0) / (summary?.days_in_period || 1)) * 100)}%
                 </div>
-                <div className="text-sm text-orange-800">Consistencia</div>
+                <div className="text-sm text-orange-800">{t('registers.summary.consistency')}</div>
               </div>
             </div>
           )}
 
-          {/* Progreso hacia objetivos (solo para hoy y ayer) */}
           {goalsProgress && !isPeriodSummary() && (
             <div className="space-y-3">
               <h3 className="font-medium text-gray-900 flex items-center">
                 <Target className="w-4 h-4 mr-2" />
-                Progreso hacia objetivos
+                {t('registers.summary.progressToGoals')}
               </h3>
               
               {Object.entries(goalsProgress).map(([key, progress]) => (
@@ -209,15 +196,14 @@ const DailySummary = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
             </div>
           )}
 
-          {/* Información de registros */}
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="flex items-center justify-between text-sm text-gray-600">
-              <span>Total de registros:</span>
+              <span>{t('registers.summary.totalRecords')}:</span>
               <span className="font-medium">{count}</span>
             </div>
             {isPeriodSummary() && summary?.daily_summary && (
               <div className="mt-2 text-xs text-gray-500">
-                Distribución: {summary.daily_summary.length} días analizados
+                {t('registers.summary.distribution')}: {summary.daily_summary.length} {t('registers.summary.daysAnalyzed')}
               </div>
             )}
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { adminService } from '../services/adminService';
 import { useAuth } from '../context/AuthContext';
@@ -7,9 +8,11 @@ import AdminUsersList from '../components/admin/AdminUsersList';
 import AdminMealPlansList from '../components/admin/AdminMealPlansList';
 import AdminRegistersList from '../components/admin/AdminRegistersList';
 import AdminConversationsList from '../components/admin/AdminConversationsList';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const AdminDashboardPage = () => {
   const { user, logout } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [stats, setStats] = useState(null);
@@ -31,7 +34,7 @@ const AdminDashboardPage = () => {
   };
 
   const handleLogout = async () => {
-    if (window.confirm('¿Estás seguro de que quieres cerrar sesión?')) {
+    if (window.confirm(t('admin.confirmLogout'))) {
       try {
         await logout();
         navigate('/login');
@@ -42,11 +45,11 @@ const AdminDashboardPage = () => {
   };
 
   const tabs = [
-    { key: 'dashboard', label: 'Dashboard', icon: '📊', description: 'Estadísticas generales' },
-    { key: 'users', label: 'Usuarios', icon: '👥', description: 'Gestión de usuarios' },
-    { key: 'meal-plans', label: 'Planes de Comida', icon: '🍽️', description: 'Planes alimenticios' },
-    { key: 'registers', label: 'Registros', icon: '📝', description: 'Registros de alimentos' },
-    { key: 'conversations', label: 'Conversaciones', icon: '💬', description: 'Chatbot' },
+    { key: 'dashboard', label: t('admin.tabs.dashboard'), icon: '📊', description: t('admin.descriptions.dashboard') },
+    { key: 'users', label: t('admin.tabs.users'), icon: '👥', description: t('admin.descriptions.users') },
+    { key: 'meal-plans', label: t('admin.tabs.mealPlans'), icon: '🍽️', description: t('admin.descriptions.mealPlans') },
+    { key: 'registers', label: t('admin.tabs.registers'), icon: '📝', description: t('admin.descriptions.registers') },
+    { key: 'conversations', label: t('admin.tabs.conversations'), icon: '💬', description: t('admin.descriptions.conversations') },
   ];
 
   const renderContent = () => {
@@ -88,19 +91,20 @@ const AdminDashboardPage = () => {
           <div className="flex flex-col md:flex-row md:justify-between md:items-center py-6 gap-4">
             <div>
               <h1 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                Panel de Administración
+                {t('admin.title')}
               </h1>
               <p className="text-sm text-gray-600 mt-1 flex items-center gap-2">
                 <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                Bienvenido, {user?.email}
+                {t('admin.welcome', { email: user?.email })}
               </p>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
+              <LanguageSwitcher />
               <span className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border border-green-200">
                 <svg className="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
                 </svg>
-                Administrador
+                {t('admin.adminBadge').replace('🔑 ', '')}
               </span>
               <button
                 onClick={handleLogout}
@@ -109,7 +113,7 @@ const AdminDashboardPage = () => {
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-                Cerrar Sesión
+                {t('admin.logout')}
               </button>
             </div>
           </div>

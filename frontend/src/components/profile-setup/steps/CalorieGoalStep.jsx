@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Input from '../../common/Input';
 import Button from '../../common/Button';
 import Alert from '../../common/Alert';
 
 const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
+  const { t } = useTranslation();
   const [method, setMethod] = useState('manual');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedGoals, setGeneratedGoals] = useState(null);
@@ -13,7 +15,6 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
     setMethod(selectedMethod);
     setError(null);
     
-    // Limpiar valores al cambiar método
     if (selectedMethod === 'ai') {
       onChange({ target: { name: 'calories_goal', value: '' } });
       onChange({ target: { name: 'protein_goal', value: '' } });
@@ -43,7 +44,6 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
       const data = await response.json();
       
       if (data.success) {
-        // Parsear la respuesta para extraer las metas
         const responseText = data.response;
         
         const caloriesMatch = responseText.match(/calorías:\s*(\d+)/i);
@@ -61,19 +61,18 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
 
           setGeneratedGoals(goals);
           
-          // Actualizar formData
           onChange({ target: { name: 'calories_goal', value: goals.calories } });
           onChange({ target: { name: 'protein_goal', value: goals.protein } });
           onChange({ target: { name: 'carbs_goal', value: goals.carbs } });
           onChange({ target: { name: 'fat_goal', value: goals.fat } });
         } else {
-          setError('No se pudieron extraer las metas de la respuesta de IA');
+          setError(t('profileSetup.calorieGoals.errorGenerating'));
         }
       } else {
-        setError('Error al generar metas con IA');
+        setError(t('profileSetup.calorieGoals.errorGeneratingAI'));
       }
     } catch (err) {
-      setError('Error de conexión al generar metas');
+      setError(t('profileSetup.calorieGoals.errorConnection'));
     } finally {
       setIsGenerating(false);
     }
@@ -88,17 +87,16 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
           </svg>
         </div>
         <h3 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent mb-2">
-          Metas Nutricionales
+          {t('profileSetup.calorieGoals.title')}
         </h3>
         <p className="text-gray-600">
-          Elige cómo quieres establecer tus metas diarias
+          {t('profileSetup.calorieGoals.subtitle')}
         </p>
       </div>
 
-      {/* Selector de método */}
       <div className="space-y-3">
         <label className="text-sm font-semibold text-gray-700 block">
-          Método de configuración
+          {t('profileSetup.calorieGoals.method')}
         </label>
         <div className="grid grid-cols-2 gap-4">
           <button
@@ -114,7 +112,7 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               <svg className={`w-8 h-8 ${method === 'manual' ? 'text-green-600' : 'text-gray-400 group-hover:text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
               </svg>
-              <span>Manual</span>
+              <span>{t('profileSetup.calorieGoals.manual')}</span>
             </div>
           </button>
           <button
@@ -130,7 +128,7 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
               <svg className={`w-8 h-8 ${method === 'ai' ? 'text-green-600' : 'text-gray-400 group-hover:text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
               </svg>
-              <span>IA</span>
+              <span>{t('profileSetup.calorieGoals.ai')}</span>
             </div>
           </button>
         </div>
@@ -144,31 +142,30 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
         />
       )}
 
-      {/* Contenido según método seleccionado */}
       {method === 'manual' ? (
         <div className="space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Calorías"
+              label={t('profileSetup.calorieGoals.calories')}
               type="number"
               name="calories_goal"
               value={formData.calories_goal}
               onChange={onChange}
               error={validationErrors.calories_goal}
-              placeholder="2000"
+              placeholder={t('profileSetup.calorieGoals.caloriesPlaceholder')}
               min="1200"
               max="5000"
               required
               className="transition-all duration-200 focus:shadow-lg"
             />
             <Input
-              label="Proteína (g)"
+              label={t('profileSetup.calorieGoals.protein')}
               type="number"
               name="protein_goal"
               value={formData.protein_goal}
               onChange={onChange}
               error={validationErrors.protein_goal}
-              placeholder="150"
+              placeholder={t('profileSetup.calorieGoals.proteinPlaceholder')}
               min="50"
               max="300"
               required
@@ -177,26 +174,26 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Input
-              label="Carbohidratos (g)"
+              label={t('profileSetup.calorieGoals.carbs')}
               type="number"
               name="carbs_goal"
               value={formData.carbs_goal}
               onChange={onChange}
               error={validationErrors.carbs_goal}
-              placeholder="250"
+              placeholder={t('profileSetup.calorieGoals.carbsPlaceholder')}
               min="100"
               max="500"
               required
               className="transition-all duration-200 focus:shadow-lg"
             />
             <Input
-              label="Grasa (g)"
+              label={t('profileSetup.calorieGoals.fat')}
               type="number"
               name="fat_goal"
               value={formData.fat_goal}
               onChange={onChange}
               error={validationErrors.fat_goal}
-              placeholder="67"
+              placeholder={t('profileSetup.calorieGoals.fatPlaceholder')}
               min="30"
               max="150"
               required
@@ -219,14 +216,14 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Generando con IA...
+                  {t('profileSetup.calorieGoals.generating')}
                 </>
               ) : (
                 <>
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
                   </svg>
-                  Generar metas con IA
+                  {t('profileSetup.calorieGoals.generateWithAI')}
                 </>
               )}
             </button>
@@ -238,28 +235,28 @@ const CalorieGoalStep = ({ formData, onChange, validationErrors }) => {
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <h4 className="font-bold text-green-800 text-lg">Metas generadas por IA</h4>
+                <h4 className="font-bold text-green-800 text-lg">{t('profileSetup.calorieGoals.generatedByAI')}</h4>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-green-100">
-                  <p className="text-xs text-green-600 font-medium mb-1">Calorías</p>
+                  <p className="text-xs text-green-600 font-medium mb-1">{t('profileSetup.calorieGoals.calories')}</p>
                   <p className="text-2xl font-bold text-green-700">{generatedGoals.calories}</p>
-                  <p className="text-xs text-green-600">kcal/día</p>
+                  <p className="text-xs text-green-600">{t('profileSetup.calorieGoals.kcalPerDay')}</p>
                 </div>
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-blue-100">
-                  <p className="text-xs text-blue-600 font-medium mb-1">Proteína</p>
+                  <p className="text-xs text-blue-600 font-medium mb-1">{t('profileSetup.calorieGoals.protein')}</p>
                   <p className="text-2xl font-bold text-blue-700">{generatedGoals.protein}</p>
-                  <p className="text-xs text-blue-600">gramos/día</p>
+                  <p className="text-xs text-blue-600">{t('profileSetup.calorieGoals.gramsPerDay')}</p>
                 </div>
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-yellow-100">
-                  <p className="text-xs text-yellow-600 font-medium mb-1">Carbohidratos</p>
+                  <p className="text-xs text-yellow-600 font-medium mb-1">{t('profileSetup.calorieGoals.carbs')}</p>
                   <p className="text-2xl font-bold text-yellow-700">{generatedGoals.carbs}</p>
-                  <p className="text-xs text-yellow-600">gramos/día</p>
+                  <p className="text-xs text-yellow-600">{t('profileSetup.calorieGoals.gramsPerDay')}</p>
                 </div>
                 <div className="bg-white rounded-xl p-4 shadow-sm border border-orange-100">
-                  <p className="text-xs text-orange-600 font-medium mb-1">Grasa</p>
+                  <p className="text-xs text-orange-600 font-medium mb-1">{t('profileSetup.calorieGoals.fat')}</p>
                   <p className="text-2xl font-bold text-orange-700">{generatedGoals.fat}</p>
-                  <p className="text-xs text-orange-600">gramos/día</p>
+                  <p className="text-xs text-orange-600">{t('profileSetup.calorieGoals.gramsPerDay')}</p>
                 </div>
               </div>
             </div>

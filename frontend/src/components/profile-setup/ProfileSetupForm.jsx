@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Alert from '../common/Alert';
@@ -11,6 +12,7 @@ import CalorieGoalStep from './steps/CalorieGoalStep';
 import WaterGoalStep from './steps/WaterGoalStep';
 
 const ProfileSetupForm = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { updateProfile, user } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
@@ -60,81 +62,80 @@ const ProfileSetupForm = () => {
     const errors = {};
 
     switch (currentStep) {
-      case 1: // Basic Info
+      case 1:
         if (!formData.date_of_birth) {
-          errors.date_of_birth = 'Fecha de nacimiento es requerida';
+          errors.date_of_birth = t('profileSetup.basicInfo.dateOfBirthRequired');
         } else {
           const birthDate = new Date(formData.date_of_birth);
           const today = new Date();
           const age = today.getFullYear() - birthDate.getFullYear();
           
           if (age < 13 || age > 120) {
-            errors.date_of_birth = 'Edad debe estar entre 13 y 120 años';
+            errors.date_of_birth = t('profileSetup.basicInfo.ageRange');
           }
         }
         if (!formData.gender) {
-          errors.gender = 'Género es requerido';
+          errors.gender = t('profileSetup.basicInfo.genderRequired');
         }
         break;
       
-      case 2: // Physical Info
+      case 2:
         if (!formData.weight) {
-          errors.weight = 'Peso es requerido';
+          errors.weight = t('profileSetup.physicalInfo.weightRequired');
         } else if (isNaN(formData.weight) || formData.weight <= 0) {
-          errors.weight = 'Peso inválido';
+          errors.weight = t('profileSetup.physicalInfo.weightInvalid');
         }
         if (!formData.height) {
-          errors.height = 'Altura es requerida';
+          errors.height = t('profileSetup.physicalInfo.heightRequired');
         } else if (isNaN(formData.height) || formData.height <= 0) {
-          errors.height = 'Altura inválida';
+          errors.height = t('profileSetup.physicalInfo.heightInvalid');
         }
         break;
       
-      case 3: // Lifestyle
+      case 3:
         if (!formData.activity_level) {
-          errors.activity_level = 'Nivel de actividad es requerido';
+          errors.activity_level = t('profileSetup.lifestyle.activityLevelRequired');
         }
         if (!formData.objective) {
-          errors.objective = 'Objetivo es requerido';
+          errors.objective = t('profileSetup.lifestyle.objectiveRequired');
         }
         break;
       
-      case 4: // Dietary
+      case 4:
         if (!formData.dietary_preference) {
-          errors.dietary_preference = 'Preferencia dietética es requerida';
+          errors.dietary_preference = t('profileSetup.dietary.dietaryPreferenceRequired');
         }
         break;
       
-      case 5: // Calorie Goal
+      case 5:
         if (formData.goals_method === 'manual') {
           if (!formData.calories_goal) {
-            errors.calories_goal = 'Meta calórica es requerida';
+            errors.calories_goal = t('profileSetup.calorieGoals.caloriesRequired');
           }
           if (!formData.protein_goal) {
-            errors.protein_goal = 'Meta de proteína es requerida';
+            errors.protein_goal = t('profileSetup.calorieGoals.proteinRequired');
           }
           if (!formData.carbs_goal) {
-            errors.carbs_goal = 'Meta de carbohidratos es requerida';
+            errors.carbs_goal = t('profileSetup.calorieGoals.carbsRequired');
           }
           if (!formData.fat_goal) {
-            errors.fat_goal = 'Meta de grasa es requerida';
+            errors.fat_goal = t('profileSetup.calorieGoals.fatRequired');
           }
         } else if (formData.goals_method === 'ai') {
-          // Para IA, verificar que se hayan generado los valores
           if (!formData.calories_goal || !formData.protein_goal || !formData.carbs_goal || !formData.fat_goal) {
-            errors.calories_goal = 'Debes generar las metas con IA primero';
+            errors.calories_goal = t('profileSetup.calorieGoals.generateFirst');
           }
         }
         break;
         
-      case 6: // Water Goal
+      case 6:
         if (formData.water_method === 'manual') {
           if (!formData.water_goal) {
-            errors.water_goal = 'Meta de agua es requerida';
+            errors.water_goal = t('profileSetup.waterGoal.waterGoalRequired');
           }
         } else if (formData.water_method === 'ai') {
           if (!formData.water_goal) {
-            errors.water_goal = 'Debes generar la meta de agua con IA primero';
+            errors.water_goal = t('profileSetup.waterGoal.generateFirst');
           }
         }
         break;
@@ -259,12 +260,12 @@ const ProfileSetupForm = () => {
 
   const getStepTitle = () => {
     const titles = {
-      1: 'Información básica',
-      2: 'Información física',
-      3: 'Estilo de vida',
-      4: 'Preferencias dietéticas',
-      5: 'Metas nutricionales',
-      6: 'Meta de hidratación',
+      1: t('profileSetup.steps.basicInfo'),
+      2: t('profileSetup.steps.physicalInfo'),
+      3: t('profileSetup.steps.lifestyle'),
+      4: t('profileSetup.steps.dietary'),
+      5: t('profileSetup.steps.calorieGoals'),
+      6: t('profileSetup.steps.waterGoal'),
     };
     return titles[currentStep];
   };
@@ -282,13 +283,13 @@ const ProfileSetupForm = () => {
         <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-6 border border-white/20">
           <div className="text-center">
             <h2 className="text-3xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-              Personaliza tu Perfil
+              {t('profileSetup.title')}
             </h2>
             <p className="text-gray-600 text-base font-medium">
               {getStepTitle()}
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              Paso {currentStep} de {totalSteps}
+              {t('profileSetup.step', { current: currentStep, total: totalSteps })}
             </p>
           </div>
           
@@ -351,7 +352,7 @@ const ProfileSetupForm = () => {
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"/>
                   </svg>
-                  Anterior
+                  {t('profileSetup.previous')}
                 </button>
               )}
               
@@ -367,20 +368,20 @@ const ProfileSetupForm = () => {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Guardando...
+                    {t('profileSetup.saving')}
                   </>
                 ) : (
                   <>
                     {currentStep === totalSteps ? (
                       <>
-                        Completar Perfil
+                        {t('profileSetup.completeProfile')}
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"/>
                         </svg>
                       </>
                     ) : (
                       <>
-                        Siguiente
+                        {t('profileSetup.next')}
                         <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"/>
                         </svg>
@@ -399,7 +400,7 @@ const ProfileSetupForm = () => {
             <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
             </svg>
-            Tus datos están seguros y protegidos
+            {t('profileSetup.securityMessage')}
           </span>
         </p>
       </div>

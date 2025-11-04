@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ArrowLeft, Loader2, ClipboardList, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import mealPlanService from "../services/MealPlanService";
 import Button from "../components/common/Button";
 import Alert from "../components/common/Alert";
+import LanguageSwitcher from "../components/common/LanguageSwitcher";
 
 const MealPlanPage = () => {
+  const { t } = useTranslation();
   const [plans, setPlans] = useState([]);
   const [newPlan, setNewPlan] = useState(null);
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -37,7 +40,7 @@ const MealPlanPage = () => {
     const result = await mealPlanService.generate();
     if (result.success) {
       setNewPlan(result.data);
-      setSuccessMessage("✅ Nuevo plan generado correctamente");
+      setSuccessMessage(t('mealplan.newPlanGenerated'));
       await loadPlans();
       setTimeout(() => setSuccessMessage(null), 5000);
     } else {
@@ -60,13 +63,13 @@ const MealPlanPage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este plan?")) return;
+    if (!window.confirm(t('mealplan.confirmDelete'))) return;
     setLoading(true);
     setError("");
     const result = await mealPlanService.deleteMealPlan(id);
     if (result.success) {
       setPlans(plans.filter((plan) => plan.id !== id));
-      setSuccessMessage(`🗑️ Plan #${id} eliminado correctamente`);
+      setSuccessMessage(t('mealplan.planDeleted', { id }));
       setTimeout(() => setSuccessMessage(null), 5000);
     } else {
       setError(result.error);
@@ -122,13 +125,14 @@ const MealPlanPage = () => {
               </Link>
               <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                  Planes Alimenticios
+                  {t('mealplan.title')}
                 </h1>
                 <p className="text-sm text-gray-600">
-                  Genera y consulta tus planes semanales con IA
+                  {t('mealplan.subtitle')}
                 </p>
               </div>
             </div>
+            <LanguageSwitcher />
           </div>
         </div>
       </header>
@@ -147,7 +151,6 @@ const MealPlanPage = () => {
           <Alert type="error" message={error} onClose={() => setError("")} />
         )}
 
-        {/* Botón generar */}
         <div className="flex justify-end">
           <Button
             onClick={handleGenerate}
@@ -155,7 +158,7 @@ const MealPlanPage = () => {
             className="flex items-center gap-2"
           >
             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-            Generar nuevo plan
+            {t('mealplan.generateNew')}
           </Button>
         </div>
 

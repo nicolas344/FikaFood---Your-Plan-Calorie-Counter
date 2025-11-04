@@ -1,13 +1,14 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RegistersPage from './pages/RegistersPage';
 import DashboardPage from './pages/DashboardPage';
-import ChatbotPage from './pages/ChatbotPage'; // Agregar esta importación
+import ChatbotPage from './pages/ChatbotPage';
 import ProfileSetupPage from './pages/ProfileSetupPage';
 import ProfilePage from './pages/ProfilePage';
-import AdminDashboardPage from './pages/AdminDashboardPage'; // Nueva importación
+import AdminDashboardPage from './pages/AdminDashboardPage';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import PublicRoute from './components/common/PublicRoute';
 import './App.css'
@@ -26,6 +27,7 @@ function App() {
 
 function AppRoutes() {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   return (
     <div className="App">
@@ -101,14 +103,13 @@ function AppRoutes() {
           } 
         />
         
-        {/* Ruta 404 */}
         <Route path="*" element={
           <div className="min-h-screen bg-gray-50 flex items-center justify-center">
             <div className="text-center">
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
-              <p className="text-gray-600 mb-4">Página no encontrada</p>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">{t('notFound.title')}</h1>
+              <p className="text-gray-600 mb-4">{t('notFound.message')}</p>
               <a href="/dashboard" className="text-blue-600 hover:text-blue-500">
-                Volver al dashboard
+                {t('notFound.backToDashboard')}
               </a>
             </div>
           </div>

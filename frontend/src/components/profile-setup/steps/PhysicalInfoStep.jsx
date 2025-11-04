@@ -1,7 +1,10 @@
+import { useTranslation } from 'react-i18next';
 import { Weight, Ruler, Activity } from 'lucide-react';
 import Input from '../../common/Input';
 
 const PhysicalInfoStep = ({ formData, onChange, validationErrors }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="space-y-6">
       <div className="text-center">
@@ -9,23 +12,23 @@ const PhysicalInfoStep = ({ formData, onChange, validationErrors }) => {
           <Activity className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent mb-2">
-          Información Física
+          {t('profileSetup.physicalInfo.title')}
         </h3>
         <p className="text-gray-600">
-          Necesitamos estos datos para calcular tus necesidades calóricas
+          {t('profileSetup.physicalInfo.subtitle')}
         </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div className="relative group">
           <Input
-            label="Peso (kg)"
+            label={t('profileSetup.physicalInfo.weight')}
             type="number"
             name="weight"
             value={formData.weight}
             onChange={onChange}
             error={validationErrors.weight}
-            placeholder="70"
+            placeholder={t('profileSetup.physicalInfo.weightPlaceholder')}
             min="1"
             step="0.1"
             className="pl-12 transition-all duration-200 focus:shadow-lg"
@@ -35,13 +38,13 @@ const PhysicalInfoStep = ({ formData, onChange, validationErrors }) => {
 
         <div className="relative group">
           <Input
-            label="Altura (cm)"
+            label={t('profileSetup.physicalInfo.height')}
             type="number"
             name="height"
             value={formData.height}
             onChange={onChange}
             error={validationErrors.height}
-            placeholder="170"
+            placeholder={t('profileSetup.physicalInfo.heightPlaceholder')}
             min="1"
             className="pl-12 transition-all duration-200 focus:shadow-lg"
           />
@@ -55,8 +58,8 @@ const PhysicalInfoStep = ({ formData, onChange, validationErrors }) => {
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
           </svg>
           <div className="text-sm text-emerald-800">
-            <p className="font-medium mb-1">Datos importantes</p>
-            <p className="text-emerald-700">Estos valores nos ayudan a calcular tu Índice de Masa Corporal (IMC) y tu metabolismo basal.</p>
+            <p className="font-medium mb-1">{t('profileSetup.physicalInfo.importantData')}</p>
+            <p className="text-emerald-700">{t('profileSetup.physicalInfo.importantDataAnswer')}</p>
           </div>
         </div>
       </div>

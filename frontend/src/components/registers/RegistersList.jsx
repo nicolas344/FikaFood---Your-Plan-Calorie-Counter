@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Clock, Camera, Zap, Activity, Award, ChevronDown, ChevronUp } from 'lucide-react';
 import registerService from '../../services/registerService';
 
 const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => {
+  const { t, i18n } = useTranslation();
   const [registers, setRegisters] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedFoodItems, setExpandedFoodItems] = useState(new Set());
@@ -14,7 +16,6 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
   const loadRegisters = async () => {
     setIsLoading(true);
     try {
-      // Construir filtros para la API
       const filters = {};
       
       if (dateFilter.period === 'custom') {
@@ -48,7 +49,8 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
+    const locale = i18n.language === 'es' ? 'es-ES' : 'en-US';
+    return date.toLocaleDateString(locale, {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',
@@ -67,13 +69,7 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
   };
 
   const getStatusText = (status) => {
-    const texts = {
-      'analyzing': 'Analizando',
-      'completed': 'Completado',
-      'failed': 'Error',
-      'reviewing': 'Revisando'
-    };
-    return texts[status] || status;
+    return t(`registers.status.${status}`) || status;
   };
 
   const getFilterLabel = () => {
@@ -82,16 +78,7 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
       return `${currentFilter.start_date} - ${currentFilter.end_date}`;
     }
     
-    const labels = {
-      'today': 'hoy',
-      'yesterday': 'ayer',
-      'this_week': 'esta semana',
-      'last_week': 'la semana pasada',
-      'this_month': 'este mes',
-      'last_month': 'el mes pasado'
-    };
-    
-    return labels[currentFilter.period] || 'el período seleccionado';
+    return t(`registers.periods.${currentFilter.period}`) || t('registers.periodLabels.selected');
   };
 
   if (isLoading) {
@@ -119,31 +106,29 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
 
   return (
     <div className="bg-white rounded-lg shadow-sm border">
-      {/* Header compacto */}
       <div className="px-4 py-3 border-b bg-gray-50 rounded-t-lg">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-gray-900 flex items-center">
             <Camera className="w-5 h-5 mr-2 text-blue-600" />
-            Registros de {getFilterLabel()}
+            {t('registers.list.registersOf')} {getFilterLabel()}
           </h2>
           <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-            {registers.length} {registers.length === 1 ? 'registro' : 'registros'}
+            {registers.length} {registers.length === 1 ? t('registers.list.register') : t('registers.list.registers')}
           </div>
         </div>
       </div>
 
-      {/* Content */}
       <div className="p-4">
         {registers.length === 0 ? (
           <div className="text-center py-8">
             <Camera className="w-12 h-12 text-gray-300 mx-auto mb-3" />
             <h3 className="text-base font-semibold text-gray-600 mb-1">
-              No hay registros para {getFilterLabel()}
+              {t('registers.list.noRegisters')} {getFilterLabel()}
             </h3>
             <p className="text-sm text-gray-500">
               {dateFilter.period === 'today' 
-                ? '¡Registra tu primera comida para comenzar!' 
-                : 'Prueba con otro período de tiempo'
+                ? t('registers.list.registerFirstMeal')
+                : t('registers.list.tryAnotherPeriod')
               }
             </p>
           </div>
@@ -157,22 +142,18 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
 
               return (
                 <div key={register.id} className="border rounded-lg hover:shadow-md transition-shadow duration-200">
-                  {/* Main Content Grid */}
                   <div className="grid grid-cols-12 gap-4 p-4">
-                    {/* Image Column */}
                     <div className="col-span-12 sm:col-span-2">
                       <div className="w-full h-16 rounded-lg overflow-hidden shadow-sm">
                         <img 
                           src={register.image} 
-                          alt="Comida registrada"
+                          alt={t('registers.list.registeredFood')}
                           className="w-full h-full object-cover"
                         />
                       </div>
                     </div>
 
-                    {/* Info Column */}
                     <div className="col-span-12 sm:col-span-6">
-                      {/* Status and Date */}
                       <div className="flex flex-wrap items-center gap-2 mb-2">
                         <span className={`px-2 py-1 text-xs font-medium rounded-full border ${getStatusColor(register.status)}`}>
                           {getStatusText(register.status)}
@@ -183,22 +164,20 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                         </span>
                       </div>
 
-                      {/* User Description */}
                       {register.description && (
                         <div className="mb-3">
-                          <p className="text-xs font-medium text-gray-600 mb-1">Tu descripción:</p>
+                          <p className="text-xs font-medium text-gray-600 mb-1">{t('registers.list.yourDescription')}</p>
                           <p className="text-sm text-gray-700 bg-blue-50 p-3 rounded border-l-2 border-blue-400 leading-relaxed">
                             "{register.description}"
                           </p>
                         </div>
                       )}
 
-                      {/* AI Description */}
                       {register.ai_description && register.status === 'completed' && (
                         <div className="flex-1">
                           <p className="text-sm font-semibold text-gray-700 mb-2 flex items-center">
                             <Zap className="w-4 h-4 mr-1 text-purple-500" />
-                            Análisis de IA:
+                            {t('registers.list.aiAnalysis')}
                           </p>
                           <div className="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-400">
                             <p className="text-sm text-gray-700 leading-relaxed">
@@ -209,57 +188,53 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                       )}
                     </div>
 
-                    {/* Nutrition Column */}
                     <div className="col-span-12 sm:col-span-4">
                       {register.status === 'completed' && (
                         <div className="space-y-3">
-                          {/* Main Calories */}
                           <div className="bg-gradient-to-r from-orange-50 to-red-50 p-3 rounded-lg border border-orange-200">
                             <div className="text-center">
                               <div className="text-2xl font-bold text-orange-600">
                                 {Math.round(register.total_calories)}
                               </div>
-                              <div className="text-sm font-medium text-orange-800">Calorías</div>
+                              <div className="text-sm font-medium text-orange-800">{t('registers.summary.calories')}</div>
                             </div>
                           </div>
 
-                          {/* Macronutrients Grid */}
                           <div className="grid grid-cols-3 gap-2">
                             <div className="bg-green-50 p-3 rounded border border-green-200 text-center">
                               <div className="text-lg font-bold text-green-600">
                                 {Math.round(register.total_protein)}g
                               </div>
-                              <div className="text-xs text-green-700 font-medium">Prot.</div>
+                              <div className="text-xs text-green-700 font-medium">{t('registers.list.prot')}</div>
                             </div>
                             
                             <div className="bg-yellow-50 p-3 rounded border border-yellow-200 text-center">
                               <div className="text-lg font-bold text-yellow-600">
                                 {Math.round(register.total_carbs)}g
                               </div>
-                              <div className="text-xs text-yellow-700 font-medium">Carb.</div>
+                              <div className="text-xs text-yellow-700 font-medium">{t('registers.list.carbs')}</div>
                             </div>
                             
                             <div className="bg-purple-50 p-3 rounded border border-purple-200 text-center">
                               <div className="text-lg font-bold text-purple-600">
                                 {Math.round(register.total_fat)}g
                               </div>
-                              <div className="text-xs text-purple-700 font-medium">Grasas</div>
+                              <div className="text-xs text-purple-700 font-medium">{t('registers.summary.fats')}</div>
                             </div>
                           </div>
 
-                          {/* Additional Info */}
                           <div className="grid grid-cols-2 gap-2">
                             {register.estimated_weight && (
                               <div className="bg-gray-50 p-3 rounded text-center border">
                                 <div className="font-bold text-gray-700">{Math.round(register.estimated_weight)}g</div>
-                                <div className="text-xs text-gray-500 font-medium">Peso est.</div>
+                                <div className="text-xs text-gray-500 font-medium">{t('registers.list.estimatedWeight')}</div>
                               </div>
                             )}
                             
                             {register.ai_confidence && (
                               <div className="bg-blue-50 p-3 rounded text-center border border-blue-200">
                                 <div className="font-bold text-blue-700">{Math.round(register.ai_confidence * 100)}%</div>
-                                <div className="text-xs text-blue-600 font-medium">Confianza</div>
+                                <div className="text-xs text-blue-600 font-medium">{t('registers.list.confidence')}</div>
                               </div>
                             )}
                           </div>
@@ -268,66 +243,63 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                     </div>
                   </div>
 
-                  {/* Expanded Nutrition Info */}
                   {register.status === 'completed' && (
                     <div className="border-t bg-gray-50 p-4">
                       <h4 className="text-sm font-semibold text-gray-700 mb-4 flex items-center">
                         <Activity className="w-4 h-4 mr-2" />
-                        Información Nutricional Completa
+                        {t('registers.list.completeNutritionalInfo')}
                       </h4>
                       
-                      {/* Micronutrients Grid */}
                       <div className="grid grid-cols-3 md:grid-cols-6 gap-3 mb-4">
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-green-600">
                             {Math.round(register.total_fiber || 0)}g
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Fibra</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.fiber')}</div>
                         </div>
                         
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-blue-600">
                             {Math.round(register.total_sugar || 0)}g
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Azúcares</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.sugars')}</div>
                         </div>
                         
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-red-600">
                             {Math.round(register.total_sodium || 0)}mg
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Sodio</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.sodium')}</div>
                         </div>
 
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-indigo-600">
                             {Math.round((register.total_calories / (register.estimated_weight || 100)) * 100) || 0}
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Cal/100g</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.calPer100g')}</div>
                         </div>
 
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-teal-600">
                             {Math.round(((register.total_protein * 4 + register.total_carbs * 4 + register.total_fat * 9) / register.total_calories * 100)) || 0}%
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Precisión</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.accuracy')}</div>
                         </div>
 
                         <div className="bg-white p-3 rounded-lg border text-center shadow-sm">
                           <div className="text-lg font-bold text-orange-600">
                             {Math.round(register.total_protein + register.total_carbs + register.total_fat)}g
                           </div>
-                          <div className="text-sm text-gray-600 font-medium">Total</div>
+                          <div className="text-sm text-gray-600 font-medium">{t('registers.list.total')}</div>
                         </div>
                       </div>
 
-                      {/* Food Items - Máximo 3 con opción de expandir */}
                       {foodItems.length > 0 && (
                         <div>
                           <div className="flex items-center justify-between mb-3">
                             <h5 className="text-sm font-semibold text-gray-700 flex items-center">
                               <Award className="w-4 h-4 mr-2" />
-                              Alimentos Detectados ({foodItems.length})
+                              {t('registers.list.detectedFoods')} ({foodItems.length})
                             </h5>
                             {hasMoreItems && (
                               <button
@@ -337,12 +309,12 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                                 {isExpanded ? (
                                   <>
                                     <ChevronUp className="w-4 h-4 mr-1" />
-                                    Ver menos
+                                    {t('registers.list.viewLess')}
                                   </>
                                 ) : (
                                   <>
                                     <ChevronDown className="w-4 h-4 mr-1" />
-                                    Ver todos ({foodItems.length})
+                                    {t('registers.list.viewAll')} ({foodItems.length})
                                   </>
                                 )}
                               </button>
@@ -373,22 +345,22 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                                 <div className="grid grid-cols-3 gap-3">
                                   <div className="text-center bg-green-50 p-2 rounded">
                                     <div className="text-lg font-bold text-green-600">{Math.round(item.protein)}g</div>
-                                    <div className="text-sm text-green-700 font-medium">Proteínas</div>
+                                    <div className="text-sm text-green-700 font-medium">{t('registers.summary.proteins')}</div>
                                   </div>
                                   <div className="text-center bg-yellow-50 p-2 rounded">
                                     <div className="text-lg font-bold text-yellow-600">{Math.round(item.carbs)}g</div>
-                                    <div className="text-sm text-yellow-700 font-medium">Carbohidratos</div>
+                                    <div className="text-sm text-yellow-700 font-medium">{t('registers.summary.carbohydrates')}</div>
                                   </div>
                                   <div className="text-center bg-purple-50 p-2 rounded">
                                     <div className="text-lg font-bold text-purple-600">{Math.round(item.fat)}g</div>
-                                    <div className="text-sm text-purple-700 font-medium">Grasas</div>
+                                    <div className="text-sm text-purple-700 font-medium">{t('registers.summary.fats')}</div>
                                   </div>
                                 </div>
                                 
                                 {item.confidence && (
                                   <div className="mt-3 text-center">
                                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                                      Confianza: {Math.round(item.confidence * 100)}%
+                                      {t('registers.list.confidence')}: {Math.round(item.confidence * 100)}%
                                     </span>
                                   </div>
                                 )}
@@ -396,16 +368,15 @@ const RegistersList = ({ refreshTrigger, dateFilter = { period: 'today' } }) => 
                             ))}
                           </div>
                           
-                          {/* Mensaje cuando están colapsados */}
                           {!isExpanded && hasMoreItems && (
                             <div className="mt-3 text-center">
                               <p className="text-sm text-gray-500">
-                                Y {foodItems.length - 3} alimentos más. 
+                                {t('registers.list.andMore', { count: foodItems.length - 3 })}
                                 <button 
                                   onClick={() => toggleFoodItems(register.id)}
                                   className="text-blue-600 hover:text-blue-800 font-medium ml-1"
                                 >
-                                  Ver todos
+                                  {t('registers.list.viewAll')}
                                 </button>
                               </p>
                             </div>

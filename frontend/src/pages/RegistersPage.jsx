@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CreateRegisterForm from '../components/registers/CreateRegisterForm';
@@ -6,17 +7,18 @@ import DailySummary from '../components/registers/DailySummary';
 import RegistersList from '../components/registers/RegistersList';
 import DateFilter from '../components/registers/DateFilter';
 import Alert from '../components/common/Alert';
+import LanguageSwitcher from '../components/common/LanguageSwitcher';
 
 const RegistersPage = () => {
+  const { t } = useTranslation();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [successMessage, setSuccessMessage] = useState(null);
   const [dateFilter, setDateFilter] = useState({ period: 'today' });
 
   const handleRegisterSuccess = (data) => {
-    setSuccessMessage(data.message || 'Registro creado exitosamente');
+    setSuccessMessage(data.message || t('registers.successMessage'));
     setRefreshTrigger(prev => prev + 1);
     
-    // Ocultar mensaje después de 5 segundos
     setTimeout(() => {
       setSuccessMessage(null);
     }, 5000);
@@ -29,7 +31,6 @@ const RegistersPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-6">
@@ -41,21 +42,22 @@ const RegistersPage = () => {
                 <ArrowLeft className="w-5 h-5" />
               </Link>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">Registros de Comida</h1>
-                <p className="text-sm text-gray-600">Registra y analiza tus comidas con IA</p>
+                <h1 className="text-3xl font-bold text-gray-900">{t('registers.title')}</h1>
+                <p className="text-sm text-gray-600">{t('registers.subtitle')}</p>
               </div>
             </div>
             
-            {/* Date Filter */}
-            <div className="hidden md:block">
-              <DateFilter 
-                onFilterChange={handleFilterChange}
-                currentFilter={dateFilter}
-              />
+            <div className="flex items-center gap-3">
+              <LanguageSwitcher />
+              <div className="hidden md:block">
+                <DateFilter 
+                  onFilterChange={handleFilterChange}
+                  currentFilter={dateFilter}
+                />
+              </div>
             </div>
           </div>
           
-          {/* Mobile Date Filter */}
           <div className="md:hidden pb-4">
             <DateFilter 
               onFilterChange={handleFilterChange}

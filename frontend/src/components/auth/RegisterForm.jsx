@@ -1,14 +1,17 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, Eye, EyeOff, ArrowLeft, Sparkles, UserPlus } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../common/Input';
 import Button from '../common/Button';
 import Alert from '../common/Alert';
+import LanguageSwitcher from '../common/LanguageSwitcher';
 import logoFikaFood from '../../assets/logoFikaFood.png';
 
 const RegisterForm = () => {
   const { register, isLoading, error, clearError } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   
   const [showPassword, setShowPassword] = useState(false);
@@ -44,35 +47,35 @@ const RegisterForm = () => {
     const errors = {};
 
     if (!formData.email) {
-      errors.email = 'El email es requerido';
+      errors.email = t('auth.emailRequired');
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email inválido';
+      errors.email = t('auth.emailInvalid');
     }
 
     if (!formData.username) {
-      errors.username = 'El nombre de usuario es requerido';
+      errors.username = t('auth.usernameRequired');
     } else if (formData.username.length < 3) {
-      errors.username = 'El nombre de usuario debe tener al menos 3 caracteres';
+      errors.username = t('auth.usernameMinLength');
     }
 
     if (!formData.first_name) {
-      errors.first_name = 'El nombre es requerido';
+      errors.first_name = t('auth.firstNameRequired');
     }
 
     if (!formData.last_name) {
-      errors.last_name = 'El apellido es requerido';
+      errors.last_name = t('auth.lastNameRequired');
     }
 
     if (!formData.password) {
-      errors.password = 'La contraseña es requerida';
+      errors.password = t('auth.passwordRequired');
     } else if (formData.password.length < 8) {
-      errors.password = 'La contraseña debe tener al menos 8 caracteres';
+      errors.password = t('auth.passwordMinLength');
     }
 
     if (!formData.password_confirm) {
-      errors.password_confirm = 'Confirma tu contraseña';
+      errors.password_confirm = t('auth.confirmPasswordRequired');
     } else if (formData.password !== formData.password_confirm) {
-      errors.password_confirm = 'Las contraseñas no coinciden';
+      errors.password_confirm = t('auth.passwordsDoNotMatch');
     }
 
     setValidationErrors(errors);
@@ -87,7 +90,6 @@ const RegisterForm = () => {
     const result = await register(formData);
     
     if (result.success) {
-      // Redirigir al formulario de perfil con el token ya establecido
       navigate('/profile-setup');
     }
   };
@@ -103,7 +105,6 @@ const RegisterForm = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-green-50 to-teal-50 py-12 px-4 sm:px-6 lg:px-8">
-      {/* Decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -111,16 +112,18 @@ const RegisterForm = () => {
       </div>
 
       <div className="max-w-md w-full space-y-8 relative">
-        {/* Back button */}
-        <Link
-          to="/login"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-green-700 transition-colors duration-200 group"
-        >
-          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
-          <span className="font-medium">Volver al inicio de sesión</span>
-        </Link>
+        <div className="flex justify-between items-start">
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 text-gray-600 hover:text-green-700 transition-colors duration-200 group"
+          >
+            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform duration-200" />
+            <span className="font-medium">{t('auth.backToLogin')}</span>
+          </Link>
+          
+          <LanguageSwitcher />
+        </div>
 
-        {/* Card with glass effect */}
         <div className="bg-white/80 backdrop-blur-lg rounded-3xl shadow-2xl p-8 border border-white/20">
           <div className="text-center">
             <div className="flex justify-center mb-6 relative">
@@ -132,11 +135,11 @@ const RegisterForm = () => {
               />
             </div>
             <h2 className="text-4xl font-extrabold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-2">
-              ¡Únete a FikaFood!
+              {t('auth.registerTitle')}
             </h2>
             <p className="text-gray-600 flex items-center justify-center gap-2">
               <Sparkles className="w-4 h-4 text-emerald-500" />
-              Comienza tu viaje hacia una vida más saludable
+              {t('auth.startHealthyJourney')}
               <Sparkles className="w-4 h-4 text-green-500" />
             </p>
           </div>
@@ -153,13 +156,13 @@ const RegisterForm = () => {
             <div className="space-y-5">
               <div className="relative group">
                 <Input
-                  label="Email"
+                  label={t('auth.email')}
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   error={validationErrors.email}
-                  placeholder="tu@email.com"
+                  placeholder={t('auth.emailPlaceholder')}
                   required
                   className="pl-12 pr-4 transition-all duration-200 focus:shadow-lg"
                 />
@@ -168,13 +171,13 @@ const RegisterForm = () => {
 
               <div className="relative group">
                 <Input
-                  label="Nombre de usuario"
+                  label={t('auth.username')}
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   error={validationErrors.username}
-                  placeholder="usuario123"
+                  placeholder={t('auth.usernamePlaceholder')}
                   required
                   className="pl-12 pr-4 transition-all duration-200 focus:shadow-lg"
                 />
@@ -183,24 +186,24 @@ const RegisterForm = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <Input
-                  label="Nombre"
+                  label={t('auth.firstName')}
                   type="text"
                   name="first_name"
                   value={formData.first_name}
                   onChange={handleChange}
                   error={validationErrors.first_name}
-                  placeholder="Juan"
+                  placeholder={t('auth.firstNamePlaceholder')}
                   required
                   className="transition-all duration-200 focus:shadow-lg"
                 />
                 <Input
-                  label="Apellido"
+                  label={t('auth.lastName')}
                   type="text"
                   name="last_name"
                   value={formData.last_name}
                   onChange={handleChange}
                   error={validationErrors.last_name}
-                  placeholder="Pérez"
+                  placeholder={t('auth.lastNamePlaceholder')}
                   required
                   className="transition-all duration-200 focus:shadow-lg"
                 />
@@ -208,13 +211,13 @@ const RegisterForm = () => {
 
               <div className="relative group">
                 <Input
-                  label="Contraseña"
+                  label={t('auth.password')}
                   type={showPassword ? 'text' : 'password'}
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   error={validationErrors.password}
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder={t('auth.passwordMin')}
                   required
                   className="pl-12 pr-12 transition-all duration-200 focus:shadow-lg"
                 />
@@ -230,13 +233,13 @@ const RegisterForm = () => {
 
               <div className="relative group">
                 <Input
-                  label="Confirmar contraseña"
+                  label={t('auth.confirmPassword')}
                   type={showConfirmPassword ? 'text' : 'password'}
                   name="password_confirm"
                   value={formData.password_confirm}
                   onChange={handleChange}
                   error={validationErrors.password_confirm}
-                  placeholder="Repite tu contraseña"
+                  placeholder={t('auth.repeatPassword')}
                   required
                   className="pl-12 pr-12 transition-all duration-200 focus:shadow-lg"
                 />
@@ -257,7 +260,7 @@ const RegisterForm = () => {
                 disabled={isLoading}
               >
                 {!isLoading && <UserPlus className="w-5 h-5" />}
-                Crear Cuenta
+                {t('auth.createAccountButton')}
               </Button>
 
               <div className="relative my-6">
@@ -265,7 +268,7 @@ const RegisterForm = () => {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-white/80 text-gray-500">¿Ya tienes cuenta?</span>
+                  <span className="px-4 bg-white/80 text-gray-500">{t('auth.alreadyHaveAccount')}</span>
                 </div>
               </div>
 
@@ -273,15 +276,14 @@ const RegisterForm = () => {
                 to="/login"
                 className="w-full flex justify-center items-center gap-2 py-3 px-4 border-2 border-gray-300 rounded-xl text-gray-700 font-medium hover:border-emerald-500 hover:text-emerald-600 hover:bg-emerald-50/50 transition-all duration-200 transform hover:scale-[1.02]"
               >
-                Iniciar Sesión
+                {t('auth.loginButton')}
               </Link>
             </div>
           </form>
         </div>
 
-        {/* Footer text */}
         <p className="text-center text-sm text-gray-600 mt-4">
-          Al registrarte, aceptas nuestros términos y condiciones
+          {t('auth.termsRegistration')}
         </p>
       </div>
     </div>

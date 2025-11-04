@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminService } from '../../services/adminService';
 
 const AdminConversationsList = () => {
+  const { t } = useTranslation();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,13 +24,13 @@ const AdminConversationsList = () => {
   };
 
   const handleDeleteConversation = async (conversationId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta conversación?')) {
+    if (window.confirm(t('admin.conversations.confirmDelete'))) {
       try {
         await adminService.deleteConversation(conversationId);
         loadConversations();
       } catch (error) {
         console.error('Error deleting conversation:', error);
-        alert('Error al eliminar la conversación');
+        alert(t('admin.conversations.errorDeleting'));
       }
     }
   };
@@ -43,7 +45,7 @@ const AdminConversationsList = () => {
               <span className="text-2xl">💬</span>
             </div>
           </div>
-          <p className="mt-4 text-gray-700 font-medium">Cargando conversaciones...</p>
+          <p className="mt-4 text-gray-700 font-medium">{t('admin.conversations.loading')}</p>
         </div>
       </div>
     );
@@ -54,9 +56,9 @@ const AdminConversationsList = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
-            Conversaciones del Chatbot
+            {t('admin.conversations.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">Monitorea las interacciones con el asistente</p>
+          <p className="text-sm text-gray-600 mt-1">{t('admin.conversations.subtitle')}</p>
         </div>
         <button
           onClick={loadConversations}
@@ -65,7 +67,7 @@ const AdminConversationsList = () => {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Actualizar
+          {t('admin.refresh')}
         </button>
       </div>
 
@@ -74,8 +76,8 @@ const AdminConversationsList = () => {
           <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
           </svg>
-          <p className="text-gray-500 text-lg font-medium">No hay conversaciones registradas</p>
-          <p className="text-gray-400 text-sm mt-1">Las conversaciones del chatbot aparecerán aquí</p>
+          <p className="text-gray-500 text-lg font-medium">{t('admin.conversations.noConversations')}</p>
+          <p className="text-gray-400 text-sm mt-1">{t('admin.conversations.noConversationsSubtitle')}</p>
         </div>
       ) : (
         <div className="bg-white/90 backdrop-blur shadow-lg overflow-hidden rounded-2xl border border-gray-200">
@@ -83,7 +85,6 @@ const AdminConversationsList = () => {
             {conversations.map((conversation) => (
               <li key={conversation.id} className="hover:bg-green-50/50 transition-colors duration-150">
                 <div className="px-6 py-5">
-                  {/* Header con ID y contador de mensajes */}
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-3">
@@ -92,10 +93,10 @@ const AdminConversationsList = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-base font-semibold text-gray-900">
-                            Conversación #{conversation.id}
+                            {t('admin.conversations.conversation')} #{conversation.id}
                           </p>
                           <p className="text-sm text-gray-500 mt-1">
-                            Usuario: {conversation.user_email || 'N/A'} • {new Date(conversation.created_at).toLocaleDateString()}
+                            {t('admin.conversations.user')}: {conversation.user_email || 'N/A'} • {new Date(conversation.created_at).toLocaleDateString()}
                           </p>
                         </div>
                       </div>
@@ -107,13 +108,12 @@ const AdminConversationsList = () => {
                           {conversation.messages_count || 0}
                         </p>
                         <p className="text-xs text-green-600 font-medium">
-                          mensajes
+                          {t('admin.conversations.messages')}
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Último mensaje y botón */}
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pl-0 sm:pl-15">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start gap-2 bg-gray-50 px-4 py-3 rounded-lg border border-gray-200">
@@ -121,9 +121,9 @@ const AdminConversationsList = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
                         </svg>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-500 font-medium mb-1">Último mensaje:</p>
+                          <p className="text-xs text-gray-500 font-medium mb-1">{t('admin.conversations.lastMessage')}:</p>
                           <p className="text-sm text-gray-700 truncate">
-                            {conversation.last_message || 'Sin mensajes'}
+                            {conversation.last_message || t('admin.conversations.noMessages')}
                           </p>
                         </div>
                       </div>
@@ -136,7 +136,7 @@ const AdminConversationsList = () => {
                       <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                       </svg>
-                      Eliminar
+                      {t('admin.conversations.delete')}
                     </button>
                   </div>
                 </div>

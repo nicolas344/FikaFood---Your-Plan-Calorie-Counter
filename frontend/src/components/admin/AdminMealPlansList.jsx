@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { adminService } from '../../services/adminService';
 
 const AdminMealPlansList = () => {
+  const { t } = useTranslation();
   const [mealPlans, setMealPlans] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -22,13 +24,13 @@ const AdminMealPlansList = () => {
   };
 
   const handleDeleteMealPlan = async (mealPlanId) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar este plan de comida?')) {
+    if (window.confirm(t('admin.mealPlans.confirmDelete'))) {
       try {
         await adminService.deleteMealPlan(mealPlanId);
         loadMealPlans();
       } catch (error) {
         console.error('Error deleting meal plan:', error);
-        alert('Error al eliminar el plan de comida');
+        alert(t('admin.mealPlans.errorDeleting'));
       }
     }
   };
@@ -43,7 +45,7 @@ const AdminMealPlansList = () => {
               <span className="text-2xl">🍽️</span>
             </div>
           </div>
-          <p className="mt-4 text-gray-700 font-medium">Cargando planes de comida...</p>
+          <p className="mt-4 text-gray-700 font-medium">{t('admin.mealPlans.loading')}</p>
         </div>
       </div>
     );
@@ -54,9 +56,9 @@ const AdminMealPlansList = () => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
-            Planes de Comida
+            {t('admin.mealPlans.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">Administra los planes alimenticios generados</p>
+          <p className="text-sm text-gray-600 mt-1">{t('admin.mealPlans.subtitle')}</p>
         </div>
         <button
           onClick={loadMealPlans}
@@ -65,7 +67,7 @@ const AdminMealPlansList = () => {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Actualizar
+          {t('admin.refresh')}
         </button>
       </div>
 
@@ -74,8 +76,8 @@ const AdminMealPlansList = () => {
           <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
           </svg>
-          <p className="text-gray-500 text-lg font-medium">No hay planes de comida registrados</p>
-          <p className="text-gray-400 text-sm mt-1">Los planes generados aparecerán aquí</p>
+          <p className="text-gray-500 text-lg font-medium">{t('admin.mealPlans.noPlans')}</p>
+          <p className="text-gray-400 text-sm mt-1">{t('admin.mealPlans.noPlansSubtitle')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -88,7 +90,7 @@ const AdminMealPlansList = () => {
                       <span className="text-2xl">🍽️</span>
                     </div>
                     <h3 className="text-lg font-bold text-white">
-                      Plan #{plan.id}
+                      {t('admin.mealPlans.plan')} #{plan.id}
                     </h3>
                   </div>
                 </div>
@@ -103,7 +105,7 @@ const AdminMealPlansList = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 font-medium">Usuario</p>
+                      <p className="text-xs text-gray-500 font-medium">{t('admin.mealPlans.user')}</p>
                       <p className="text-sm text-gray-900 font-semibold truncate">
                         {plan.user_email || 'N/A'}
                       </p>
@@ -117,7 +119,7 @@ const AdminMealPlansList = () => {
                       </svg>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-500 font-medium">Fecha de creación</p>
+                      <p className="text-xs text-gray-500 font-medium">{t('admin.mealPlans.creationDate')}</p>
                       <p className="text-sm text-gray-900 font-semibold">
                         {new Date(plan.created_at).toLocaleDateString()}
                       </p>
@@ -126,18 +128,18 @@ const AdminMealPlansList = () => {
 
                   <div className="grid grid-cols-2 gap-3 mt-4">
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200">
-                      <p className="text-xs text-gray-600 font-medium mb-1">Calorías</p>
+                      <p className="text-xs text-gray-600 font-medium mb-1">{t('admin.mealPlans.calories')}</p>
                       <p className="text-xl font-bold text-green-700">
                         {plan.target_calories}
                       </p>
-                      <p className="text-xs text-green-600">kcal/día</p>
+                      <p className="text-xs text-green-600">{t('admin.mealPlans.caloriesPerDay')}</p>
                     </div>
                     <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-3 rounded-lg border border-blue-200">
-                      <p className="text-xs text-gray-600 font-medium mb-1">Duración</p>
+                      <p className="text-xs text-gray-600 font-medium mb-1">{t('admin.mealPlans.duration')}</p>
                       <p className="text-xl font-bold text-blue-700">
                         {plan.days}
                       </p>
-                      <p className="text-xs text-blue-600">días</p>
+                      <p className="text-xs text-blue-600">{t('admin.mealPlans.days')}</p>
                     </div>
                   </div>
                 </div>
@@ -150,7 +152,7 @@ const AdminMealPlansList = () => {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
-                    Eliminar Plan
+                    {t('admin.mealPlans.deletePlan')}
                   </button>
                 </div>
               </div>

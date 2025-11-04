@@ -1,13 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import { Calendar, User2 } from 'lucide-react';
 import Input from '../../common/Input';
 import Select from '../../common/Select';
 
 const BasicInfoStep = ({ formData, onChange, validationErrors }) => {
+  const { t } = useTranslation();
+  
   const genderOptions = [
-    { value: '', label: 'Selecciona tu género' },
-    { value: 'M', label: 'Masculino' },
-    { value: 'F', label: 'Femenino' },
-    { value: 'O', label: 'Otro' }
+    { value: 'M', label: t('profileSetup.basicInfo.male') },
+    { value: 'F', label: t('profileSetup.basicInfo.female') },
+    { value: 'O', label: t('profileSetup.basicInfo.other') }
   ];
 
   return (
@@ -17,17 +19,17 @@ const BasicInfoStep = ({ formData, onChange, validationErrors }) => {
           <User2 className="w-8 h-8 text-white" />
         </div>
         <h3 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent mb-2">
-          Información Básica
+          {t('profileSetup.basicInfo.title')}
         </h3>
         <p className="text-gray-600">
-          Esta información nos ayuda a personalizar tu experiencia
+          {t('profileSetup.basicInfo.subtitle')}
         </p>
       </div>
 
       <div className="space-y-5">
         <div className="relative">
           <Input
-            label="Fecha de nacimiento"
+            label={t('profileSetup.basicInfo.dateOfBirth')}
             type="date"
             name="date_of_birth"
             value={formData.date_of_birth}
@@ -41,11 +43,12 @@ const BasicInfoStep = ({ formData, onChange, validationErrors }) => {
 
         <div className="relative">
           <Select
-            label="Género"
+            label={t('profileSetup.basicInfo.gender')}
             name="gender"
             value={formData.gender}
             onChange={onChange}
             options={genderOptions}
+            placeholder={t('profileSetup.basicInfo.selectGender')}
             error={validationErrors.gender}
             required
             className="pl-12 transition-all duration-200 focus:shadow-lg"
@@ -60,8 +63,8 @@ const BasicInfoStep = ({ formData, onChange, validationErrors }) => {
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
           </svg>
           <div className="text-sm text-green-800">
-            <p className="font-medium mb-1">¿Por qué necesitamos esto?</p>
-            <p className="text-green-700">Tu edad y género nos ayudan a calcular tus necesidades calóricas y nutricionales de manera más precisa.</p>
+            <p className="font-medium mb-1">{t('profileSetup.basicInfo.whyNeed')}</p>
+            <p className="text-green-700">{t('profileSetup.basicInfo.whyNeedAnswer')}</p>
           </div>
         </div>
       </div>

@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const AdminStats = ({ stats, onRefresh }) => {
+  const { t } = useTranslation();
   if (!stats) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -11,7 +13,7 @@ const AdminStats = ({ stats, onRefresh }) => {
               <span className="text-2xl">📊</span>
             </div>
           </div>
-          <p className="mt-4 text-gray-700 font-medium">Cargando estadísticas...</p>
+          <p className="mt-4 text-gray-700 font-medium">{t('admin.stats.loading')}</p>
         </div>
       </div>
     );
@@ -19,28 +21,28 @@ const AdminStats = ({ stats, onRefresh }) => {
 
   const statCards = [
     {
-      title: 'Total Usuarios',
+      title: t('admin.stats.totalUsers'),
       value: stats.total_users,
       icon: '👥',
       color: 'bg-gradient-to-br from-green-500 to-emerald-600',
       change: stats.users_change,
     },
     {
-      title: 'Planes de Comida',
+      title: t('admin.stats.mealPlans'),
       value: stats.total_meal_plans,
       icon: '🍽️',
       color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
       change: stats.meal_plans_change,
     },
     {
-      title: 'Registros Hoy',
+      title: t('admin.stats.registersToday'),
       value: stats.registers_today,
       icon: '📝',
       color: 'bg-gradient-to-br from-teal-500 to-cyan-600',
       change: stats.registers_change,
     },
     {
-      title: 'Conversaciones',
+      title: t('admin.stats.conversations'),
       value: stats.total_conversations,
       icon: '💬',
       color: 'bg-gradient-to-br from-lime-500 to-green-600',
@@ -53,9 +55,9 @@ const AdminStats = ({ stats, onRefresh }) => {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
         <div>
           <h2 className="text-2xl font-bold bg-gradient-to-r from-green-700 to-emerald-700 bg-clip-text text-transparent">
-            Estadísticas del Sistema
+            {t('admin.stats.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">Resumen completo de la actividad en FikaFood</p>
+          <p className="text-sm text-gray-600 mt-1">{t('admin.stats.subtitle')}</p>
         </div>
         <button
           onClick={onRefresh}
@@ -64,7 +66,7 @@ const AdminStats = ({ stats, onRefresh }) => {
           <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          Actualizar
+          {t('admin.refresh')}
         </button>
       </div>
 
@@ -103,7 +105,7 @@ const AdminStats = ({ stats, onRefresh }) => {
                     )}
                     {stat.change >= 0 ? '+' : ''}{stat.change}%
                   </span>
-                  <span className="text-gray-500 text-xs">vs mes anterior</span>
+                  <span className="text-gray-500 text-xs">{t('admin.stats.vsPreviousMonth')}</span>
                 </div>
               </div>
             )}
@@ -115,7 +117,7 @@ const AdminStats = ({ stats, onRefresh }) => {
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Usuarios Activos Recientes
+              {t('admin.stats.recentActiveUsers')}
             </h3>
             <div className="mt-4">
               {stats.recent_users?.map((user, index) => (
@@ -131,19 +133,19 @@ const AdminStats = ({ stats, onRefresh }) => {
         <div className="bg-white overflow-hidden shadow rounded-lg">
           <div className="px-4 py-5 sm:p-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Actividad del Sistema
+              {t('admin.stats.systemActivity')}
             </h3>
             <div className="mt-4 space-y-2">
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Registros de hoy</span>
+                <span className="text-sm text-gray-600">{t('admin.stats.registersOfToday')}</span>
                 <span className="text-sm font-medium">{stats.registers_today}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Nuevos usuarios esta semana</span>
+                <span className="text-sm text-gray-600">{t('admin.stats.newUsersThisWeek')}</span>
                 <span className="text-sm font-medium">{stats.new_users_week}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-sm text-gray-600">Planes generados hoy</span>
+                <span className="text-sm text-gray-600">{t('admin.stats.plansGeneratedToday')}</span>
                 <span className="text-sm font-medium">{stats.meal_plans_today}</span>
               </div>
             </div>
