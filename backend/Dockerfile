@@ -25,11 +25,16 @@ COPY . .
 # Crear directorios necesarios
 RUN mkdir -p staticfiles media data
 
-# Dar permisos de ejecución al script de inicio
-RUN chmod +x start.sh
-
 # Exponer puerto
 EXPOSE 8000
 
-# Script de inicio
-CMD ["./start.sh"]
+# Script de inicio - sin usar $PORT en el CMD
+CMD python manage.py migrate --noinput && \
+    python manage.py collectstatic --noinput && \
+    gunicorn FikaFood.wsgi:application \
+        --bind 0.0.0.0:$PORT \
+        --workers 2 \
+        --timeout 120 \
+        --access-logfile - \
+        --error-logfile - \
+        --log-level debug
