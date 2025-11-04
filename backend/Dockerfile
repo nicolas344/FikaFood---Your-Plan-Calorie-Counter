@@ -28,6 +28,5 @@ RUN mkdir -p staticfiles media data
 # Exponer puerto
 EXPOSE 8000
 
-# CMD vacío - Railway usará Custom Start Command desde Settings
-# Si no se configura Custom Start Command, usar este fallback:
-    CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn FikaFood.wsgi:application --bind 0.0.0.0:$PORT --workers 2 --timeout 120 --access-logfile - --error-logfile -"]
+# Script de inicio con logs detallados para debugging
+CMD ["sh", "-c", "set -e && echo '=== Step 1: Running migrations ===' && python manage.py migrate --noinput && echo '=== Step 2: Collecting static files ===' && python manage.py collectstatic --noinput && echo '=== Step 3: Starting Gunicorn on port '${PORT:-8000}' ===' && exec gunicorn FikaFood.wsgi:application --bind 0.0.0.0:${PORT:-8000} --workers 1 --timeout 120 --access-logfile - --error-logfile - --log-level info"]
