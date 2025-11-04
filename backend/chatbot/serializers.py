@@ -20,3 +20,4 @@ class ConversationSerializer(serializers.ModelSerializer):
 class ChatRequestSerializer(serializers.Serializer):
     message = serializers.CharField(max_length=1000)
     conversation_id = serializers.IntegerField(required=False, allow_null=True)
+    language = serializers.CharField(max_length=10, required=False, default='es')

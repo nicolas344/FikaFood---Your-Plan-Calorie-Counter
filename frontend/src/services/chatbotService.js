@@ -1,10 +1,14 @@
 import api from './api';
+import i18n from '../locales/i18n';
 
 const chatbotService = {
   // Enviar mensaje al chatbot
   sendMessage: async (message, conversationId = null) => {
     try {
-      const payload = { message };
+      const payload = { 
+        message,
+        language: i18n.language || 'es'
+      };
       if (conversationId) {
         payload.conversation_id = conversationId;
       }

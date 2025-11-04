@@ -1,4 +1,5 @@
 import api from './api';
+import i18n from '../locales/i18n';
 
 const mealPlanService = {
    async deleteMealPlan(id) {
@@ -16,7 +17,9 @@ const mealPlanService = {
     // Generar un nuevo plan (usando la IA + guardado en backend)
   generate: async () => {
     try {
-      const response = await api.post('/mealplan/generate/');
+      const response = await api.post('/mealplan/generate/', {
+        language: i18n.language || 'es'
+      });
       return {
         success: true,
         data: response.data

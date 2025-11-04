@@ -79,7 +79,7 @@ class ChatbotService:
             return True
         return False
 
-    def generate_response(self, user_message, user, conversation=None):
+    def generate_response(self, user_message, user, conversation=None, language='es'):
         try:
             # Crear conversación si no existe
             if not conversation:
@@ -94,9 +94,37 @@ class ChatbotService:
             
             user_context = self.get_user_context(user)
             
+            # Configurar idioma para los prompts
+            lang_instructions = {
+                'es': 'Responde en español.',
+                'en': 'Respond in English.'
+            }
+            lang_instruction = lang_instructions.get(language, lang_instructions['es'])
+            
+            # Palabras clave según idioma
+            water_keywords = ['agua', 'hidrat'] if language == 'es' else ['water', 'hydrat']
+            goals_keywords = ['meta', 'nutri', 'calor'] if language == 'es' else ['goal', 'nutri', 'calor']
+            
             # Detectar si es solicitud de agua
-            if 'agua' in user_message.lower() or 'hidrat' in user_message.lower():
-                prompt = f"""Eres un nutricionista especializado en hidratación.
+            if any(keyword in user_message.lower() for keyword in water_keywords):
+                if language == 'en':
+                    prompt = f"""You are a hydration specialist nutritionist.
+
+{user_context}
+
+Calculate how much water they should drink using this formula:
+- Weight × 35ml = base
+- If moderate activity: +300ml
+- If active activity: +500ml
+
+Example: 70kg × 35ml = 2450ml + activity = total
+
+Respond EXACTLY like this:
+"Recommended water: 2750ml"
+
+User asks: {user_message}"""
+                else:
+                    prompt = f"""Eres un nutricionista especializado en hidratación.
 
 {user_context}
 
@@ -112,8 +140,23 @@ Responde EXACTAMENTE así:
 
 Usuario pregunta: {user_message}"""
 
-            elif 'meta' in user_message.lower() and ('nutri' in user_message.lower() or 'calor' in user_message.lower()):
-                prompt = f"""Eres un nutricionista en FikaFood. 
+            elif any(keyword in user_message.lower() for keyword in goals_keywords):
+                if language == 'en':
+                    prompt = f"""You are a nutritionist at FikaFood. 
+
+{user_context}
+
+Calculate personalized nutritional goals.
+
+Respond EXACTLY like this:
+"Calories: 2000
+Protein: 150g
+Carbohydrates: 250g
+Fat: 67g"
+
+User: {user_message}"""
+                else:
+                    prompt = f"""Eres un nutricionista en FikaFood. 
 
 {user_context}
 
@@ -128,11 +171,22 @@ Grasa: 67g"
 Usuario: {user_message}"""
 
             else:
-                prompt = f"""Eres un nutricionista en FikaFood. 
+                if language == 'en':
+                    prompt = f"""You are a nutritionist at FikaFood. 
 
 {user_context}
 
-Responde como experto en nutrición. Si preguntan sobre metas, diles que escriban:
+Respond as a nutrition expert. {lang_instruction} If they ask about goals, tell them to write:
+- "generate my nutritional goals" 
+- "how much water should I drink"
+
+User: {user_message}"""
+                else:
+                    prompt = f"""Eres un nutricionista en FikaFood. 
+
+{user_context}
+
+Responde como experto en nutrición. {lang_instruction} Si preguntan sobre metas, diles que escriban:
 - "genera mis metas nutricionales" 
 - "cuánta agua debo beber"
 
@@ -161,17 +215,32 @@ Usuario: {user_message}"""
                     response_text += chunk.text
             
             # Guardar según tipo de solicitud
-            if 'agua' in user_message.lower():
-                if self._save_ai_water(user, response_text):
-                    response_text += "\n\n✅ ¡Meta de agua guardada!"
-                else:
-                    response_text += "\n\n❌ No pude guardar automáticamente."
+            water_check = any(keyword in user_message.lower() for keyword in water_keywords)
+            goals_check = any(keyword in user_message.lower() for keyword in goals_keywords)
             
-            elif 'meta' in user_message.lower():
-                if self._save_ai_goals(user, response_text):
-                    response_text += "\n\n✅ ¡Metas nutricionales guardadas!"
+            if water_check:
+                if self._save_ai_water(user, response_text):
+                    if language == 'en':
+                        response_text += "\n\n✅ Water goal saved!"
+                    else:
+                        response_text += "\n\n✅ ¡Meta de agua guardada!"
                 else:
-                    response_text += "\n\n❌ No pude guardar automáticamente."
+                    if language == 'en':
+                        response_text += "\n\n❌ Could not save automatically."
+                    else:
+                        response_text += "\n\n❌ No pude guardar automáticamente."
+            
+            elif goals_check:
+                if self._save_ai_goals(user, response_text):
+                    if language == 'en':
+                        response_text += "\n\n✅ Nutritional goals saved!"
+                    else:
+                        response_text += "\n\n✅ ¡Metas nutricionales guardadas!"
+                else:
+                    if language == 'en':
+                        response_text += "\n\n❌ Could not save automatically."
+                    else:
+                        response_text += "\n\n❌ No pude guardar automáticamente."
             
             # Guardar respuesta
             Message.objects.create(

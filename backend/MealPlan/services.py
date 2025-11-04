@@ -35,24 +35,29 @@ class MealPlanService:
     def parse_plan(self, response_text):
         """
         Convierte el texto generado en un dict estructurado por día
+        Soporta español e inglés
         """
         plan = {}
-        dias = re.findall(r"Día\s*(\d+)(.*?)(?=Día\s*\d+|$)", response_text, re.DOTALL | re.IGNORECASE)
+        # Buscar días en ambos idiomas
+        dias = re.findall(r"(?:Día|Day)\s*(\d+)(.*?)(?=(?:Día|Day)\s*\d+|$)", response_text, re.DOTALL | re.IGNORECASE)
+        
         for dia, contenido in dias:
-            desayuno = re.search(r"Desayuno[:\-]\s*(.*?)(?=Almuerzo)", contenido, re.DOTALL | re.IGNORECASE)
-            almuerzo = re.search(r"Almuerzo[:\-]\s*(.*?)(?=Cena)", contenido, re.DOTALL | re.IGNORECASE)
-            cena = re.search(r"Cena[:\-]\s*(.*)", contenido, re.DOTALL | re.IGNORECASE)
+            # Buscar comidas en ambos idiomas
+            desayuno = re.search(r"(?:Desayuno|Breakfast)[:\-]\s*(.*?)(?=(?:Almuerzo|Lunch))", contenido, re.DOTALL | re.IGNORECASE)
+            almuerzo = re.search(r"(?:Almuerzo|Lunch)[:\-]\s*(.*?)(?=(?:Cena|Dinner))", contenido, re.DOTALL | re.IGNORECASE)
+            cena = re.search(r"(?:Cena|Dinner)[:\-]\s*(.*)", contenido, re.DOTALL | re.IGNORECASE)
 
             # Buscar si dentro de la cena hay una "Nota:"
             nota = None
             if cena:
-                partes = re.split(r"\*\*?Nota:?|\bNota:?", cena.group(1), maxsplit=1, flags=re.IGNORECASE)
+                partes = re.split(r"\*\*?(?:Nota|Note):?|\b(?:Nota|Note):?", cena.group(1), maxsplit=1, flags=re.IGNORECASE)
                 cena_texto = partes[0].strip()
                 if len(partes) > 1:
                     nota = partes[1].strip()
             else:
                 cena_texto = ""
 
+            # Usar "Día" para mantener consistencia en el storage
             plan[f"Día {dia}"] = {
                 "desayuno": desayuno.group(1).strip() if desayuno else "",
                 "almuerzo": almuerzo.group(1).strip() if almuerzo else "",
@@ -65,10 +70,29 @@ class MealPlanService:
 
         return plan
 
-    def generate_mealplan(self, user):
+    def generate_mealplan(self, user, language='es'):
         user_context = self.get_user_context(user)
 
-        prompt = f"""Eres un nutricionista en FikaFood.
+        if language == 'en':
+            prompt = f"""You are a nutritionist at FikaFood.
+
+{user_context}
+
+Generate a 7-day meal plan with breakfast, lunch, and dinner.
+Respond EXACTLY in this format:
+
+Day 1
+Breakfast: ...
+Lunch: ...
+Dinner: ...
+
+Day 2
+Breakfast: ...
+Lunch: ...
+Dinner: ...
+"""
+        else:
+            prompt = f"""Eres un nutricionista en FikaFood.
 
 {user_context}
 

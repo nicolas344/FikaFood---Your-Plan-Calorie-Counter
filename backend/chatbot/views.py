@@ -24,6 +24,7 @@ def chat_message(request):
     if serializer.is_valid():
         message = serializer.validated_data['message']
         conversation_id = serializer.validated_data.get('conversation_id')
+        language = serializer.validated_data.get('language', 'es')
         
         conversation = None
         if conversation_id:
@@ -43,7 +44,8 @@ def chat_message(request):
         result = chatbot_service.generate_response(
             user_message=message,
             user=request.user,
-            conversation=conversation
+            conversation=conversation,
+            language=language
         )
         
         if result['success']:

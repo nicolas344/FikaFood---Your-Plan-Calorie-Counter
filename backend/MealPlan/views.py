@@ -16,8 +16,9 @@ from .pdf_generators import (
 @permission_classes([IsAuthenticated])
 def generate_mealplan(request):
     service = MealPlanService()
+    language = request.data.get('language', 'es')
     try:
-        plan_text = service.generate_mealplan(request.user)
+        plan_text = service.generate_mealplan(request.user, language=language)
         return Response({
             "success": True,
             "plan": plan_text
